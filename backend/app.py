@@ -85,7 +85,7 @@ def detect_anomaly():
     row = df.iloc[row_index]
     
     # Prepare features (exclude Class column)
-    features = row.drop('Class').values.reshape(1, -1)
+    features = row.drop('Class').values.reshape(1, -1)  # Use .values to remove feature names
     
     # Make prediction
     prediction = model.predict(features)
@@ -105,8 +105,8 @@ def detect_anomaly():
 @app.route('/data')
 def get_data():
     # Enhanced transaction amount statistics
-    fraud_df = df[df['Class'] == 1]
-    non_fraud_df = df[df['Class'] == 0]
+    fraud_df = df[df['Class'] == 1].copy()  # Add .copy() here
+    non_fraud_df = df[df['Class'] == 0].copy()  # Add .copy() here
     
     # Transaction amount statistics by class
     amount_stats = {
@@ -159,7 +159,7 @@ def get_data():
     
     # Amount distribution by bins
     bins = [0, 10, 50, 100, 500, 1000, 5000, float('inf')]
-    bin_labels = ['0-10', '10-50', '50-100', '100-500', '500-1000', '1000-5000', '5000+']    
+    bin_labels = ['0-10', '10-50', '50-100', '100-500', '500-1000', '1000-5000', '5000+']
     fraud_df['amount_bin'] = pd.cut(fraud_df['Amount'], bins=bins, labels=bin_labels)
     non_fraud_df['amount_bin'] = pd.cut(non_fraud_df['Amount'], bins=bins, labels=bin_labels)
     
@@ -373,7 +373,7 @@ def detect_anomaly_custom_dataset(dataset_id):
     row = custom_df.iloc[row_index]
     
     # Prepare features (exclude Class column)
-    features = row.drop('Class').values.reshape(1, -1)
+    features = row.drop('Class').values.reshape(1, -1)  # Use .values to remove feature names
     
     # Make prediction
     prediction = model.predict(features)
@@ -401,8 +401,11 @@ def analyze_dataset(dataset_id):
     # Prepare features (exclude Class column if present)
     X = custom_df.drop(columns=['Class'])
     
+    # Remove feature names to avoid the sklearn warning
+    X_no_names = X.values
+    
     # Make predictions
-    predictions = model.predict(X)
+    predictions = model.predict(X_no_names)
     
     # Convert predictions from -1 to 1 (anomaly) and 1 to 0 (normal)
     predictions = [1 if x == -1 else 0 for x in predictions]
@@ -434,8 +437,8 @@ def analyze_dataset(dataset_id):
         }
     
     # Calculate transaction amount statistics
-    fraud_pred_df = custom_df[custom_df['Prediction'] == 1]
-    non_fraud_pred_df = custom_df[custom_df['Prediction'] == 0]
+    fraud_pred_df = custom_df[custom_df['Prediction'] == 1].copy()  # Add .copy() here
+    non_fraud_pred_df = custom_df[custom_df['Prediction'] == 0].copy()  # Add .copy() here
     
     # Transaction amount statistics by predicted class
     amount_stats = {
