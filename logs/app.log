@@ -20,3 +20,402 @@
 2025-05-02 11:31:47,771 INFO: Response Data: {"accuracy": 99.0, "amount_stats": {"fraud": {"max": 1.0, "mean": 1.0, "median": 1.0, "min": 1.0, "quartiles": [1.0, 1.0, 1.0], "std": NaN}, "non_fraud": {"max": 1903.26, "mean": 51.07, "median": 15.95, "min": 0.0, "quartiles": [14.95, 15.95, 29.67], "std": 159.9}}, "anomalies_detected": 1, "anomalies_percentage": 0.5, "anomalies_preview": [{"Amount": 1.0, "Class": 1, "Prediction": 1, "Time": 11131, "V1": -1.42662331260887, "V10": -11.4204509744097, "V11": 10.8530116481991, "V12": -15.969207520809, "V13": 0.546690084634152, "V14": -14.690729133641, "V15": 0.91233739988339, "V16": -12.2271892780267, "V17": -18.5873662058916, "V18": -6.92076186060174, "V19": 3.16699890688552, "V2": 4.14198623236944, "V20": 1.41067765264616, "V21": 1.86567876848945, "V22": 0.407809281593599, "V23": 0.605809354312964, "V24": -0.769348118123441, "V25": -1.7463368287861, "V26": 0.502039516709683, "V27": 1.9772583297728, "V28": 0.711606531209485, "V3": -9.80410344235714, "V4": 6.66627300324451, "V5": -4.74952... [truncated] [in /home/user/cfraud/backend/app.py:124]
 2025-05-02 11:32:37,652 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
 2025-05-02 11:32:37,653 INFO: Response Data: {"actual_class": "Not Fraud", "prediction": "Normal (Not Fraud)", "row_data": {"Amount": 2.69, "Class": 0.0, "Time": 0.0, "V1": 1.19185711131486, "V10": -0.166974414004614, "V11": 1.61272666105479, "V12": 1.06523531137287, "V13": 0.48909501589608, "V14": -0.143772296441519, "V15": 0.635558093258208, "V16": 0.463917041022171, "V17": -0.114804663102346, "V18": -0.183361270123994, "V19": -0.145783041325259, "V2": 0.26615071205963, "V20": -0.0690831352230203, "V21": -0.225775248033138, "V22": -0.638671952771851, "V23": 0.101288021253234, "V24": -0.339846475529127, "V25": 0.167170404418143, "V26": 0.125894532368176, "V27": -0.0089830991432281, "V28": 0.0147241691924927, "V3": 0.16648011335321, "V4": 0.448154078460911, "V5": 0.0600176492822243, "V6": -0.0823608088155687, "V7": -0.0788029833323113, "V8": 0.0851016549148104, "V9": -0.255425128109186}} [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:33:54,206 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:33:55,040 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:33:55,042 INFO: Response Data: {"data": [{"Amount": 149.62, "Class": 0, "Time": 0.0, "V1": -1.3598071336738, "V10": 0.0907941719789316, "V11": -0.551599533260813, "V12": -0.617800855762348, "V13": -0.991389847235408, "V14": -0.311169353699879, "V15": 1.46817697209427, "V16": -0.470400525259478, "V17": 0.207971241929242, "V18": 0.0257905801985591, "V19": 0.403992960255733, "V2": -0.0727811733098497, "V20": 0.251412098239705, "V21": -0.018306777944153, "V22": 0.277837575558899, "V23": -0.110473910188767, "V24": 0.0669280749146731, "V25": 0.128539358273528, "V26": -0.189114843888824, "V27": 0.133558376740387, "V28": -0.0210530534538215, "V3": 2.53634673796914, "V4": 1.37815522427443, "V5": -0.338320769942518, "V6": 0.462387777762292, "V7": 0.239598554061257, "V8": 0.0986979012610507, "V9": 0.363786969611213, "index": 0}, {"Amount": 2.69, "Class": 0, "Time": 0.0, "V1": 1.19185711131486, "V10": -0.166974414004614, "V11": 1.61272666105479, "V12": 1.06523531137287, "V13": 0.48909501589608, "V14": -0.143772296441519, "V15":... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:33:56,002 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:33:56,003 INFO: Response Data: {"amount_distribution": {"fraud": {"0-10": 222, "10-50": 57, "100-500": 95, "1000-5000": 9, "50-100": 56, "500-1000": 26, "5000+": 0}, "non_fraud": {"0-10": 98217, "10-50": 90724, "100-500": 47271, "1000-5000": 2876, "50-100": 37198, "500-1000": 6176, "5000+": 55}}, "amount_stats": {"fraud": {"max": 2125.87, "mean": 122.21, "median": 9.25, "min": 0.0, "quartiles": [1.0, 9.25, 105.89], "std": 256.68}, "non_fraud": {"max": 25691.16, "mean": 88.29, "median": 22.0, "min": 0.0, "quartiles": [5.65, 22.0, 77.05], "std": 250.11}}, "correlations": {"all": {"Amount": 0.005631753006768552, "Class": 1.0, "Time": -0.012322570929245588, "V1": -0.10134729859508294, "V10": -0.21688294364103206, "V11": 0.15487564474394433, "V12": -0.26059292487722485, "V13": -0.004569778799461309, "V14": -0.3025436958044028, "V15": -0.004223402267856675, "V16": -0.19653894030401736, "V17": -0.32648106724371595, "V18": -0.11148525388904133, "V19": 0.034783013036515056, "V2": 0.0912886503446179, "V20": 0.0200903241969746... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:38:10,023 INFO: Application startup [in /home/user/cfraud/backend/app.py:59]
+2025-05-02 11:38:15,461 INFO: Application startup [in /home/user/cfraud/backend/app.py:59]
+2025-05-02 11:38:22,176 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:38:22,604 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:38:22,610 INFO: Response Data: {"data": [{"Amount": 149.62, "Class": 0, "Time": 0.0, "V1": -1.3598071336738, "V10": 0.0907941719789316, "V11": -0.551599533260813, "V12": -0.617800855762348, "V13": -0.991389847235408, "V14": -0.311169353699879, "V15": 1.46817697209427, "V16": -0.470400525259478, "V17": 0.207971241929242, "V18": 0.0257905801985591, "V19": 0.403992960255733, "V2": -0.0727811733098497, "V20": 0.251412098239705, "V21": -0.018306777944153, "V22": 0.277837575558899, "V23": -0.110473910188767, "V24": 0.0669280749146731, "V25": 0.128539358273528, "V26": -0.189114843888824, "V27": 0.133558376740387, "V28": -0.0210530534538215, "V3": 2.53634673796914, "V4": 1.37815522427443, "V5": -0.338320769942518, "V6": 0.462387777762292, "V7": 0.239598554061257, "V8": 0.0986979012610507, "V9": 0.363786969611213, "index": 0}, {"Amount": 2.69, "Class": 0, "Time": 0.0, "V1": 1.19185711131486, "V10": -0.166974414004614, "V11": 1.61272666105479, "V12": 1.06523531137287, "V13": 0.48909501589608, "V14": -0.143772296441519, "V15":... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:38:23,956 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:38:23,958 INFO: Response Data: {"amount_distribution": {"fraud": {"0-10": 222, "10-50": 57, "100-500": 95, "1000-5000": 9, "50-100": 56, "500-1000": 26, "5000+": 0}, "non_fraud": {"0-10": 98217, "10-50": 90724, "100-500": 47271, "1000-5000": 2876, "50-100": 37198, "500-1000": 6176, "5000+": 55}}, "amount_stats": {"fraud": {"max": 2125.87, "mean": 122.21, "median": 9.25, "min": 0.0, "quartiles": [1.0, 9.25, 105.89], "std": 256.68}, "non_fraud": {"max": 25691.16, "mean": 88.29, "median": 22.0, "min": 0.0, "quartiles": [5.65, 22.0, 77.05], "std": 250.11}}, "correlations": {"all": {"Amount": 0.005631753006768552, "Class": 1.0, "Time": -0.012322570929245588, "V1": -0.10134729859508294, "V10": -0.21688294364103206, "V11": 0.15487564474394433, "V12": -0.26059292487722485, "V13": -0.004569778799461309, "V14": -0.3025436958044028, "V15": -0.004223402267856675, "V16": -0.19653894030401736, "V17": -0.32648106724371595, "V18": -0.11148525388904133, "V19": 0.034783013036515056, "V2": 0.0912886503446179, "V20": 0.0200903241969746... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:38:36,971 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:38:36,971 INFO: Response Data: {"actual_class": "Not Fraud", "prediction": "Normal (Not Fraud)", "row_data": {"Amount": 40.8, "Class": 0.0, "Time": 7.0, "V1": -0.644269442348146, "V10": 1.24937617815176, "V11": -0.619467796121913, "V12": 0.291474353088705, "V13": 1.75796421396042, "V14": -1.32386521970526, "V15": 0.686132504394383, "V16": -0.0761269994382006, "V17": -1.2221273453247, "V18": -0.358221569869078, "V19": 0.324504731321494, "V2": 1.41796354547385, "V20": -0.156741852488285, "V21": 1.94346533978412, "V22": -1.01545470979971, "V23": 0.057503529867291, "V24": -0.649709005559993, "V25": -0.415266566234811, "V26": -0.0516342969262494, "V27": -1.20692108094258, "V28": -1.08533918832377, "V3": 1.0743803763556, "V4": -0.492199018495015, "V5": 0.948934094764157, "V6": 0.428118462833089, "V7": 1.12063135838353, "V8": -3.80786423873589, "V9": 0.615374730667027}} [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:38:40,838 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:38:40,839 INFO: Response Data: {"actual_class": "Not Fraud", "prediction": "Normal (Not Fraud)", "row_data": {"Amount": 149.62, "Class": 0.0, "Time": 0.0, "V1": -1.3598071336738, "V10": 0.0907941719789316, "V11": -0.551599533260813, "V12": -0.617800855762348, "V13": -0.991389847235408, "V14": -0.311169353699879, "V15": 1.46817697209427, "V16": -0.470400525259478, "V17": 0.207971241929242, "V18": 0.0257905801985591, "V19": 0.403992960255733, "V2": -0.0727811733098497, "V20": 0.251412098239705, "V21": -0.018306777944153, "V22": 0.277837575558899, "V23": -0.110473910188767, "V24": 0.0669280749146731, "V25": 0.128539358273528, "V26": -0.189114843888824, "V27": 0.133558376740387, "V28": -0.0210530534538215, "V3": 2.53634673796914, "V4": 1.37815522427443, "V5": -0.338320769942518, "V6": 0.462387777762292, "V7": 0.239598554061257, "V8": 0.0986979012610507, "V9": 0.363786969611213}} [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:38:42,044 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:38:42,046 INFO: Response Data: {"actual_class": "Not Fraud", "prediction": "Normal (Not Fraud)", "row_data": {"Amount": 2.69, "Class": 0.0, "Time": 0.0, "V1": 1.19185711131486, "V10": -0.166974414004614, "V11": 1.61272666105479, "V12": 1.06523531137287, "V13": 0.48909501589608, "V14": -0.143772296441519, "V15": 0.635558093258208, "V16": 0.463917041022171, "V17": -0.114804663102346, "V18": -0.183361270123994, "V19": -0.145783041325259, "V2": 0.26615071205963, "V20": -0.0690831352230203, "V21": -0.225775248033138, "V22": -0.638671952771851, "V23": 0.101288021253234, "V24": -0.339846475529127, "V25": 0.167170404418143, "V26": 0.125894532368176, "V27": -0.0089830991432281, "V28": 0.0147241691924927, "V3": 0.16648011335321, "V4": 0.448154078460911, "V5": 0.0600176492822243, "V6": -0.0823608088155687, "V7": -0.0788029833323113, "V8": 0.0851016549148104, "V9": -0.255425128109186}} [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:38:43,240 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:38:43,241 INFO: Response Data: {"actual_class": "Not Fraud", "prediction": "Normal (Not Fraud)", "row_data": {"Amount": 378.66, "Class": 0.0, "Time": 1.0, "V1": -1.35835406159823, "V10": 0.207642865216696, "V11": 0.624501459424895, "V12": 0.066083685268831, "V13": 0.717292731410831, "V14": -0.165945922763554, "V15": 2.34586494901581, "V16": -2.89008319444231, "V17": 1.10996937869599, "V18": -0.121359313195888, "V19": -2.26185709530414, "V2": -1.34016307473609, "V20": 0.524979725224404, "V21": 0.247998153469754, "V22": 0.771679401917229, "V23": 0.909412262347719, "V24": -0.689280956490685, "V25": -0.327641833735251, "V26": -0.139096571514147, "V27": -0.0553527940384261, "V28": -0.0597518405929204, "V3": 1.77320934263119, "V4": 0.379779593034328, "V5": -0.503198133318193, "V6": 1.80049938079263, "V7": 0.791460956450422, "V8": 0.247675786588991, "V9": -1.51465432260583}} [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:38:44,558 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:38:44,559 INFO: Response Data: {"actual_class": "Not Fraud", "prediction": "Normal (Not Fraud)", "row_data": {"Amount": 69.99, "Class": 0.0, "Time": 2.0, "V1": -1.15823309349523, "V10": 0.753074431976354, "V11": -0.822842877946363, "V12": 0.53819555014995, "V13": 1.3458515932154, "V14": -1.11966983471731, "V15": 0.175121130008994, "V16": -0.451449182813529, "V17": -0.237033239362776, "V18": -0.0381947870352842, "V19": 0.803486924960175, "V2": 0.877736754848451, "V20": 0.408542360392758, "V21": -0.0094306971323291, "V22": 0.79827849458971, "V23": -0.137458079619063, "V24": 0.141266983824769, "V25": -0.206009587619756, "V26": 0.502292224181569, "V27": 0.219422229513348, "V28": 0.215153147499206, "V3": 1.548717846511, "V4": 0.403033933955121, "V5": -0.407193377311653, "V6": 0.0959214624684256, "V7": 0.592940745385545, "V8": -0.270532677192282, "V9": 0.817739308235294}} [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:38:47,873 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:38:47,887 INFO: Response Data: {"data": [{"Amount": 149.62, "Class": 0, "Time": 0.0, "V1": -1.3598071336738, "V10": 0.0907941719789316, "V11": -0.551599533260813, "V12": -0.617800855762348, "V13": -0.991389847235408, "V14": -0.311169353699879, "V15": 1.46817697209427, "V16": -0.470400525259478, "V17": 0.207971241929242, "V18": 0.0257905801985591, "V19": 0.403992960255733, "V2": -0.0727811733098497, "V20": 0.251412098239705, "V21": -0.018306777944153, "V22": 0.277837575558899, "V23": -0.110473910188767, "V24": 0.0669280749146731, "V25": 0.128539358273528, "V26": -0.189114843888824, "V27": 0.133558376740387, "V28": -0.0210530534538215, "V3": 2.53634673796914, "V4": 1.37815522427443, "V5": -0.338320769942518, "V6": 0.462387777762292, "V7": 0.239598554061257, "V8": 0.0986979012610507, "V9": 0.363786969611213, "index": 0}, {"Amount": 2.69, "Class": 0, "Time": 0.0, "V1": 1.19185711131486, "V10": -0.166974414004614, "V11": 1.61272666105479, "V12": 1.06523531137287, "V13": 0.48909501589608, "V14": -0.143772296441519, "V15":... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:38:51,250 ERROR: Unhandled exception: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 103, in decorated_function
+    response = f(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 354, in filter_data
+    return jsonify({
+           ^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type int64 is not JSON serializable
+ [in /home/user/cfraud/backend/app.py:655]
+2025-05-02 11:38:54,003 ERROR: Unhandled exception: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 103, in decorated_function
+    response = f(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 354, in filter_data
+    return jsonify({
+           ^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type int64 is not JSON serializable
+ [in /home/user/cfraud/backend/app.py:655]
+2025-05-02 11:38:55,237 ERROR: Unhandled exception: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 103, in decorated_function
+    response = f(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 354, in filter_data
+    return jsonify({
+           ^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type int64 is not JSON serializable
+ [in /home/user/cfraud/backend/app.py:655]
+2025-05-02 11:38:56,275 ERROR: Unhandled exception: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 103, in decorated_function
+    response = f(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 354, in filter_data
+    return jsonify({
+           ^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type int64 is not JSON serializable
+ [in /home/user/cfraud/backend/app.py:655]
+2025-05-02 11:38:57,845 ERROR: Unhandled exception: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 103, in decorated_function
+    response = f(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 354, in filter_data
+    return jsonify({
+           ^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type int64 is not JSON serializable
+ [in /home/user/cfraud/backend/app.py:655]
+2025-05-02 11:38:59,592 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:38:59,593 INFO: Response Data: {"data": [], "filters": {"class": 1, "max_amount": null, "min_amount": null}, "pagination": {"has_next": false, "has_prev": true, "page": 5697, "per_page": 100, "total_pages": 5, "total_records": 492}} [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:39:01,163 ERROR: Unhandled exception: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 103, in decorated_function
+    response = f(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 354, in filter_data
+    return jsonify({
+           ^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type int64 is not JSON serializable
+ [in /home/user/cfraud/backend/app.py:655]
+2025-05-02 11:39:02,255 ERROR: Unhandled exception: Object of type int64 is not JSON serializable
+Traceback (most recent call last):
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 103, in decorated_function
+    response = f(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/backend/app.py", line 354, in filter_data
+    return jsonify({
+           ^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 326, in _iterencode_list
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/home/user/cfraud/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type int64 is not JSON serializable
+ [in /home/user/cfraud/backend/app.py:655]
+2025-05-02 11:39:13,636 INFO: File upload initiated [in /home/user/cfraud/backend/app.py:374]
+2025-05-02 11:39:13,772 INFO: Generated dataset ID: 7f4ffbbf-d706-4861-b38f-b66e5ad0fe9d [in /home/user/cfraud/backend/app.py:390]
+2025-05-02 11:39:13,774 INFO: File saved to uploads/7f4ffbbf-d706-4861-b38f-b66e5ad0fe9d.csv [in /home/user/cfraud/backend/app.py:395]
+2025-05-02 11:39:13,789 INFO: Successfully loaded CSV with 200 rows [in /home/user/cfraud/backend/app.py:400]
+2025-05-02 11:39:13,797 INFO: Upload successful. Dataset stats: 200 total, 3 fraud [in /home/user/cfraud/backend/app.py:431]
+2025-05-02 11:39:13,805 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:39:13,807 INFO: Response Data: {"dataset_id": "7f4ffbbf-d706-4861-b38f-b66e5ad0fe9d", "preview": [{"Amount": 15.95, "Class": 0, "Time": 11050, "V1": 1.26199147503122, "V10": -0.363379182407985, "V11": 1.67923004839466, "V12": -1.70788779217046, "V13": 2.30627976377486, "V14": 1.53138685330501, "V15": -0.110679210701631, "V16": 0.902884826342153, "V17": -0.282636375665164, "V18": 0.863941367221973, "V19": 0.19446141929883, "V2": -0.0383965311722272, "V20": -0.0141709490699445, "V21": -0.063831984181992, "V22": 0.0673185997281488, "V23": -0.135750598985415, "V24": -0.46757235974397, "V25": 0.302383275962324, "V26": 1.0635828527491, "V27": -0.0913034121026654, "V28": -0.0117814752527089, "V3": 0.558282559646863, "V4": 0.0127220860081323, "V5": -0.333838951548065, "V6": -0.0326462314240501, "V7": -0.525370719545371, "V8": -0.029765269716102, "V9": 1.46452703448295}, {"Amount": 29.67, "Class": 0, "Time": 11050, "V1": -1.73220705397389, "V10": -0.454748838269774, "V11": 2.27932249426177, "V12": -1.91536593961592, "V13": 1... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:39:17,934 INFO: Analyzing dataset: 7f4ffbbf-d706-4861-b38f-b66e5ad0fe9d [in /home/user/cfraud/backend/app.py:498]
+2025-05-02 11:39:17,937 INFO: Dataset loaded with 200 records [in /home/user/cfraud/backend/app.py:506]
+2025-05-02 11:39:17,941 INFO: Running model predictions [in /home/user/cfraud/backend/app.py:515]
+2025-05-02 11:39:17,988 INFO: Detected 1 anomalies [in /home/user/cfraud/backend/app.py:523]
+2025-05-02 11:39:18,035 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:39:18,038 INFO: Response Data: {"accuracy": 99.0, "amount_stats": {"fraud": {"max": 1.0, "mean": 1.0, "median": 1.0, "min": 1.0, "quartiles": [1.0, 1.0, 1.0], "std": NaN}, "non_fraud": {"max": 1903.26, "mean": 51.07, "median": 15.95, "min": 0.0, "quartiles": [14.95, 15.95, 29.67], "std": 159.9}}, "anomalies_detected": 1, "anomalies_percentage": 0.5, "anomalies_preview": [{"Amount": 1.0, "Class": 1, "Prediction": 1, "Time": 11131, "V1": -1.42662331260887, "V10": -11.4204509744097, "V11": 10.8530116481991, "V12": -15.969207520809, "V13": 0.546690084634152, "V14": -14.690729133641, "V15": 0.91233739988339, "V16": -12.2271892780267, "V17": -18.5873662058916, "V18": -6.92076186060174, "V19": 3.16699890688552, "V2": 4.14198623236944, "V20": 1.41067765264616, "V21": 1.86567876848945, "V22": 0.407809281593599, "V23": 0.605809354312964, "V24": -0.769348118123441, "V25": -1.7463368287861, "V26": 0.502039516709683, "V27": 1.9772583297728, "V28": 0.711606531209485, "V3": -9.80410344235714, "V4": 6.66627300324451, "V5": -4.74952... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:39:32,346 INFO: File upload initiated [in /home/user/cfraud/backend/app.py:374]
+2025-05-02 11:39:32,375 INFO: Generated dataset ID: d19f1e81-14ab-4950-9a26-d4771734fba4 [in /home/user/cfraud/backend/app.py:390]
+2025-05-02 11:39:32,380 INFO: File saved to uploads/d19f1e81-14ab-4950-9a26-d4771734fba4.csv [in /home/user/cfraud/backend/app.py:395]
+2025-05-02 11:39:32,400 INFO: Successfully loaded CSV with 200 rows [in /home/user/cfraud/backend/app.py:400]
+2025-05-02 11:39:32,406 INFO: Upload successful. Dataset stats: 200 total, 0 fraud [in /home/user/cfraud/backend/app.py:431]
+2025-05-02 11:39:32,418 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:39:32,421 INFO: Response Data: {"dataset_id": "d19f1e81-14ab-4950-9a26-d4771734fba4", "preview": [{"Amount": 17.88, "Class": 0, "Time": 3750, "V1": -1.28877160707204, "V10": -0.174183832432363, "V11": 0.960323277695654, "V12": -3.11216264257153, "V13": 1.43600389353058, "V14": 0.938163352692149, "V15": -0.925000743136174, "V16": 1.29382614684595, "V17": 0.564102888991512, "V18": -1.92210525947453, "V19": -1.64255036801733, "V2": -1.00311486781161, "V20": -0.29520304995291, "V21": -0.134250375503315, "V22": -0.133238317825136, "V23": 0.0436802334192387, "V24": 0.313827140441344, "V25": -0.927037895082046, "V26": -0.982408729408036, "V27": -0.0379185858525851, "V28": -0.059861638687098, "V3": 1.79382417617386, "V4": -1.8152857115769, "V5": 0.942298804311817, "V6": -1.67453561768877, "V7": -0.414739841627581, "V8": -0.32900024410176, "V9": 0.567564372106546}, {"Amount": 48.32, "Class": 0, "Time": 3750, "V1": 1.38906671618054, "V10": 0.27905440447765, "V11": 1.00961108775268, "V12": -3.17307619309244, "V13": 1.870308859... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:39:33,941 INFO: Analyzing dataset: d19f1e81-14ab-4950-9a26-d4771734fba4 [in /home/user/cfraud/backend/app.py:498]
+2025-05-02 11:39:33,941 INFO: Dataset loaded with 200 records [in /home/user/cfraud/backend/app.py:506]
+2025-05-02 11:39:33,943 INFO: Running model predictions [in /home/user/cfraud/backend/app.py:515]
+2025-05-02 11:39:33,964 INFO: Detected 0 anomalies [in /home/user/cfraud/backend/app.py:523]
+2025-05-02 11:39:33,978 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:39:33,980 INFO: Response Data: {"accuracy": 100.0, "amount_stats": {"fraud": {"max": 0, "mean": 0, "median": 0, "min": 0, "quartiles": [0, 0, 0], "std": 0}, "non_fraud": {"max": 1176.22, "mean": 56.69, "median": 34.54, "min": 2.49, "quartiles": [18.28, 34.54, 67.55], "std": 92.42}}, "anomalies_detected": 0, "anomalies_percentage": 0.0, "anomalies_preview": [], "confusion_matrix": {"false_negative": 0, "false_positive": 0, "true_negative": 0, "true_positive": 0}, "correlations": {"all": {"Amount": NaN, "Class": NaN, "Prediction": NaN, "Time": NaN, "V1": NaN, "V10": NaN, "V11": NaN, "V12": NaN, "V13": NaN, "V14": NaN, "V15": NaN, "V16": NaN, "V17": NaN, "V18": NaN, "V19": NaN, "V2": NaN, "V20": NaN, "V21": NaN, "V22": NaN, "V23": NaN, "V24": NaN, "V25": NaN, "V26": NaN, "V27": NaN, "V28": NaN, "V3": NaN, "V4": NaN, "V5": NaN, "V6": NaN, "V7": NaN, "V8": NaN, "V9": NaN}, "top_negative": {"Time": NaN, "V1": NaN, "V2": NaN, "V3": NaN, "V4": NaN, "V5": NaN, "V6": NaN, "V7": NaN, "V8": NaN, "V9": NaN}, "top_positive": {"Ti... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:39:46,386 INFO: File upload initiated [in /home/user/cfraud/backend/app.py:374]
+2025-05-02 11:39:46,422 INFO: Generated dataset ID: 2f278330-237e-4bd8-9957-4189be57fa4f [in /home/user/cfraud/backend/app.py:390]
+2025-05-02 11:39:46,423 INFO: File saved to uploads/2f278330-237e-4bd8-9957-4189be57fa4f.csv [in /home/user/cfraud/backend/app.py:395]
+2025-05-02 11:39:46,429 INFO: Successfully loaded CSV with 200 rows [in /home/user/cfraud/backend/app.py:400]
+2025-05-02 11:39:46,432 INFO: Upload successful. Dataset stats: 200 total, 0 fraud [in /home/user/cfraud/backend/app.py:431]
+2025-05-02 11:39:46,437 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:39:46,438 INFO: Response Data: {"dataset_id": "2f278330-237e-4bd8-9957-4189be57fa4f", "preview": [{"Amount": 9.35, "Class": 0, "Time": 1544, "V1": -0.781938361660293, "V10": 0.827187379314241, "V11": -0.0003406663424421, "V12": 0.367389900922314, "V13": 1.25238670715181, "V14": -0.419315090404433, "V15": 0.232873119294127, "V16": 0.378455745791729, "V17": -0.718881218471475, "V18": -0.629679244255087, "V19": -0.874435501166441, "V2": 1.59447365091682, "V20": -0.0034508696910131, "V21": -0.11336052555504, "V22": -0.411819460153922, "V23": 0.0061797792062472, "V24": 0.68121030660162, "V25": -0.286224375330896, "V26": -0.412346552863649, "V27": -0.663628584480555, "V28": -0.134150756624588, "V3": 2.06765951752984, "V4": 1.823248881684, "V5": 0.260622990660312, "V6": -0.502556090275108, "V7": 1.0901122154568, "V8": -0.490576085376082, "V9": -1.14210495885267}, {"Amount": 5.0, "Class": 0, "Time": 1545, "V1": -0.693979451462988, "V10": -0.596957827991295, "V11": 1.16362489726212, "V12": 1.3619271206694, "V13": 0.487335343... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:39:48,114 INFO: Analyzing dataset: 2f278330-237e-4bd8-9957-4189be57fa4f [in /home/user/cfraud/backend/app.py:498]
+2025-05-02 11:39:48,114 INFO: Dataset loaded with 200 records [in /home/user/cfraud/backend/app.py:506]
+2025-05-02 11:39:48,117 INFO: Running model predictions [in /home/user/cfraud/backend/app.py:515]
+2025-05-02 11:39:48,137 INFO: Detected 0 anomalies [in /home/user/cfraud/backend/app.py:523]
+2025-05-02 11:39:48,153 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:39:48,154 INFO: Response Data: {"accuracy": 100.0, "amount_stats": {"fraud": {"max": 0, "mean": 0, "median": 0, "min": 0, "quartiles": [0, 0, 0], "std": 0}, "non_fraud": {"max": 3669.0, "mean": 68.21, "median": 12.24, "min": 0.0, "quartiles": [5.0, 12.24, 45.92], "std": 282.67}}, "anomalies_detected": 0, "anomalies_percentage": 0.0, "anomalies_preview": [], "confusion_matrix": {"false_negative": 0, "false_positive": 0, "true_negative": 0, "true_positive": 0}, "correlations": {"all": {"Amount": NaN, "Class": NaN, "Prediction": NaN, "Time": NaN, "V1": NaN, "V10": NaN, "V11": NaN, "V12": NaN, "V13": NaN, "V14": NaN, "V15": NaN, "V16": NaN, "V17": NaN, "V18": NaN, "V19": NaN, "V2": NaN, "V20": NaN, "V21": NaN, "V22": NaN, "V23": NaN, "V24": NaN, "V25": NaN, "V26": NaN, "V27": NaN, "V28": NaN, "V3": NaN, "V4": NaN, "V5": NaN, "V6": NaN, "V7": NaN, "V8": NaN, "V9": NaN}, "top_negative": {"Time": NaN, "V1": NaN, "V2": NaN, "V3": NaN, "V4": NaN, "V5": NaN, "V6": NaN, "V7": NaN, "V8": NaN, "V9": NaN}, "top_positive": {"Time"... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:39:57,764 INFO: File upload initiated [in /home/user/cfraud/backend/app.py:374]
+2025-05-02 11:39:57,808 INFO: Generated dataset ID: 975ba16b-5b20-4294-97b4-99ae4719ce7f [in /home/user/cfraud/backend/app.py:390]
+2025-05-02 11:39:57,811 INFO: File saved to uploads/975ba16b-5b20-4294-97b4-99ae4719ce7f.csv [in /home/user/cfraud/backend/app.py:395]
+2025-05-02 11:39:57,825 INFO: Successfully loaded CSV with 200 rows [in /home/user/cfraud/backend/app.py:400]
+2025-05-02 11:39:57,830 INFO: Upload successful. Dataset stats: 200 total, 0 fraud [in /home/user/cfraud/backend/app.py:431]
+2025-05-02 11:39:57,836 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:39:57,840 INFO: Response Data: {"dataset_id": "975ba16b-5b20-4294-97b4-99ae4719ce7f", "preview": [{"Amount": 12.95, "Class": 0, "Time": 10990, "V1": -0.978969489583306, "V10": -0.888369299985104, "V11": 0.798600835419164, "V12": -1.86486728079157, "V13": 3.34244804514508, "V14": 0.979709964122475, "V15": 0.285232961523083, "V16": 0.255231666478148, "V17": 0.25199570663318, "V18": 0.114434499637662, "V19": -0.141914987882041, "V2": 0.891371058527791, "V20": 0.0238122079238867, "V21": 0.0166479165722379, "V22": 0.289814017186599, "V23": -0.354844000576512, "V24": 0.451382157593924, "V25": 0.146643200509974, "V26": 1.03580844468919, "V27": -0.28571471112476, "V28": 0.0676393028115307, "V3": 2.31953487852286, "V4": -0.36644252574796, "V5": -0.0644284624348069, "V6": -0.701253204921447, "V7": 0.287478640049507, "V8": -0.277377742854159, "V9": 0.889065107143445}, {"Amount": 15.95, "Class": 0, "Time": 10990, "V1": 1.18797616119661, "V10": -0.308360096560234, "V11": 2.27314500088701, "V12": -2.39121325186433, "V13": 0.20110... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:39:59,154 INFO: Analyzing dataset: 975ba16b-5b20-4294-97b4-99ae4719ce7f [in /home/user/cfraud/backend/app.py:498]
+2025-05-02 11:39:59,158 INFO: Dataset loaded with 200 records [in /home/user/cfraud/backend/app.py:506]
+2025-05-02 11:39:59,161 INFO: Running model predictions [in /home/user/cfraud/backend/app.py:515]
+2025-05-02 11:39:59,201 INFO: Detected 0 anomalies [in /home/user/cfraud/backend/app.py:523]
+2025-05-02 11:39:59,221 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:39:59,224 INFO: Response Data: {"accuracy": 100.0, "amount_stats": {"fraud": {"max": 0, "mean": 0, "median": 0, "min": 0, "quartiles": [0, 0, 0], "std": 0}, "non_fraud": {"max": 958.47, "mean": 33.53, "median": 15.95, "min": 0.89, "quartiles": [15.95, 15.95, 39.0], "std": 85.05}}, "anomalies_detected": 0, "anomalies_percentage": 0.0, "anomalies_preview": [], "confusion_matrix": {"false_negative": 0, "false_positive": 0, "true_negative": 0, "true_positive": 0}, "correlations": {"all": {"Amount": NaN, "Class": NaN, "Prediction": NaN, "Time": NaN, "V1": NaN, "V10": NaN, "V11": NaN, "V12": NaN, "V13": NaN, "V14": NaN, "V15": NaN, "V16": NaN, "V17": NaN, "V18": NaN, "V19": NaN, "V2": NaN, "V20": NaN, "V21": NaN, "V22": NaN, "V23": NaN, "V24": NaN, "V25": NaN, "V26": NaN, "V27": NaN, "V28": NaN, "V3": NaN, "V4": NaN, "V5": NaN, "V6": NaN, "V7": NaN, "V8": NaN, "V9": NaN}, "top_negative": {"Time": NaN, "V1": NaN, "V2": NaN, "V3": NaN, "V4": NaN, "V5": NaN, "V6": NaN, "V7": NaN, "V8": NaN, "V9": NaN}, "top_positive": {"Time... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:40:10,322 INFO: File upload initiated [in /home/user/cfraud/backend/app.py:374]
+2025-05-02 11:40:10,357 INFO: Generated dataset ID: 593903be-f36f-4ac8-bab8-022a46c07bda [in /home/user/cfraud/backend/app.py:390]
+2025-05-02 11:40:10,360 INFO: File saved to uploads/593903be-f36f-4ac8-bab8-022a46c07bda.csv [in /home/user/cfraud/backend/app.py:395]
+2025-05-02 11:40:10,376 INFO: Successfully loaded CSV with 200 rows [in /home/user/cfraud/backend/app.py:400]
+2025-05-02 11:40:10,378 INFO: Upload successful. Dataset stats: 200 total, 0 fraud [in /home/user/cfraud/backend/app.py:431]
+2025-05-02 11:40:10,392 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:40:10,393 INFO: Response Data: {"dataset_id": "593903be-f36f-4ac8-bab8-022a46c07bda", "preview": [{"Amount": 2746.34, "Class": 0, "Time": 10516, "V1": -4.04389329729297, "V10": -1.15277966159542, "V11": 2.37881412789119, "V12": -1.54991343524127, "V13": 2.52913274248272, "V14": 1.42866443592616, "V15": -1.53394314741626, "V16": 0.369543727149355, "V17": 1.88918118400534, "V18": -1.14920390391553, "V19": -0.607915792116702, "V2": -9.46036591686046, "V20": 5.55076003025472, "V21": 1.81797370567709, "V22": -0.455298754822174, "V23": -2.53830077360318, "V24": -0.106817543056911, "V25": -0.462828257571016, "V26": -0.276423767410579, "V27": -0.477587327742283, "V28": 0.467107136572773, "V3": -2.17958123303194, "V4": 1.86838487566167, "V5": -3.4970193962602, "V6": 1.78917021583408, "V7": 2.46522612093401, "V8": -0.459007646468069, "V9": 0.556874339635617}, {"Amount": 3.55, "Class": 0, "Time": 10517, "V1": 1.19531908696267, "V10": -0.357285034366513, "V11": 1.20388332754012, "V12": -2.27619391933847, "V13": 1.06049336431085... [truncated] [in /home/user/cfraud/backend/app.py:124]
+2025-05-02 11:40:11,876 INFO: Analyzing dataset: 593903be-f36f-4ac8-bab8-022a46c07bda [in /home/user/cfraud/backend/app.py:498]
+2025-05-02 11:40:11,876 INFO: Dataset loaded with 200 records [in /home/user/cfraud/backend/app.py:506]
+2025-05-02 11:40:11,878 INFO: Running model predictions [in /home/user/cfraud/backend/app.py:515]
+2025-05-02 11:40:11,895 INFO: Detected 3 anomalies [in /home/user/cfraud/backend/app.py:523]
+2025-05-02 11:40:11,912 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:114]
+2025-05-02 11:40:11,914 INFO: Response Data: {"accuracy": 98.5, "amount_stats": {"fraud": {"max": 3995.92, "mean": 1391.56, "median": 168.0, "min": 10.76, "quartiles": [89.38, 168.0, 2081.96], "std": 2256.81}, "non_fraud": {"max": 2746.34, "mean": 67.72, "median": 19.0, "min": 0.0, "quartiles": [8.92, 19.0, 41.71], "std": 242.72}}, "anomalies_detected": 3, "anomalies_percentage": 1.5, "anomalies_preview": [{"Amount": 3995.92, "Class": 0, "Prediction": 1, "Time": 10538, "V1": -6.4872859093908, "V10": -1.73939877444309, "V11": 2.19602677203618, "V12": -2.19129686944795, "V13": 1.38398643429169, "V14": 1.85272948187258, "V15": -1.0120093585686, "V16": 0.882773054545658, "V17": 1.90504000593044, "V18": -0.754152484646696, "V19": -0.990436231749779, "V2": -13.6304494248752, "V20": 8.01257442855485, "V21": 2.36446516402321, "V22": -1.83556732732474, "V23": -3.43592137176239, "V24": -0.125620824753878, "V25": -1.31101141537512, "V26": -0.663525507769039, "V27": -0.702355887024033, "V28": 0.694099691391451, "V3": -3.19073525985381, "V4":... [truncated] [in /home/user/cfraud/backend/app.py:124]
