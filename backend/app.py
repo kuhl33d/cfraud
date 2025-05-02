@@ -45,6 +45,12 @@ def detect_anomaly():
     data = request.get_json()
     row_index = data.get('row_index', 0)
     
+    # Convert row_index to integer
+    try:
+        row_index = int(row_index)
+    except (ValueError, TypeError):
+        return jsonify({'error': 'Row index must be a valid integer'}), 400
+    
     # Get the row from the dataset
     if row_index < 0 or row_index >= len(df):
         return jsonify({'error': 'Invalid row index'}), 400
