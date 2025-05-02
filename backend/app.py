@@ -433,6 +433,52 @@ def analyze_dataset(dataset_id):
             'false_negative': int(fn)
         }
     
+    # Calculate transaction amount statistics
+    fraud_pred_df = custom_df[custom_df['Prediction'] == 1]
+    non_fraud_pred_df = custom_df[custom_df['Prediction'] == 0]
+    
+    # Transaction amount statistics by predicted class
+    amount_stats = {
+        'fraud': {
+            'mean': round(fraud_pred_df['Amount'].mean(), 2) if not fraud_pred_df.empty else 0,
+            'median': round(fraud_pred_df['Amount'].median(), 2) if not fraud_pred_df.empty else 0,
+            'min': round(fraud_pred_df['Amount'].min(), 2) if not fraud_pred_df.empty else 0,
+            'max': round(fraud_pred_df['Amount'].max(), 2) if not fraud_pred_df.empty else 0,
+            'std': round(fraud_pred_df['Amount'].std(), 2) if not fraud_pred_df.empty else 0,
+            'quartiles': [
+                round(fraud_pred_df['Amount'].quantile(0.25), 2) if not fraud_pred_df.empty else 0,
+                round(fraud_pred_df['Amount'].quantile(0.5), 2) if not fraud_pred_df.empty else 0,
+                round(fraud_pred_df['Amount'].quantile(0.75), 2) if not fraud_pred_df.empty else 0
+            ]
+        },
+        'non_fraud': {
+            'mean': round(non_fraud_pred_df['Amount'].mean(), 2) if not non_fraud_pred_df.empty else 0,
+            'median': round(non_fraud_pred_df['Amount'].median(), 2) if not non_fraud_pred_df.empty else 0,
+            'min': round(non_fraud_pred_df['Amount'].min(), 2) if not non_fraud_pred_df.empty else 0,
+            'max': round(non_fraud_pred_df['Amount'].max(), 2) if not non_fraud_pred_df.empty else 0,
+            'std': round(non_fraud_pred_df['Amount'].std(), 2) if not non_fraud_pred_df.empty else 0,
+            'quartiles': [
+                round(non_fraud_pred_df['Amount'].quantile(0.25), 2) if not non_fraud_pred_df.empty else 0,
+                round(non_fraud_pred_df['Amount'].quantile(0.5), 2) if not non_fraud_pred_df.empty else 0,
+                round(non_fraud_pred_df['Amount'].quantile(0.75), 2) if not non_fraud_pred_df.empty else 0
+            ]
+        }
+    }
+    
+    # Calculate feature correlations with prediction
+    correlations = {}
+    if 'Prediction' in custom_df.columns:
+        # Add Prediction column to calculate correlations
+        correlations = custom_df.corr()['Prediction'].sort_values(ascending=False).to_dict()
+        
+        # Top positive and negative correlations
+        top_positive = {k: round(v, 4) for k, v in sorted(correlations.items(), key=lambda x: x[1], reverse=True)[:10]}
+        top_negative = {k: round(v, 4) for k, v in sorted(correlations.items(), key=lambda x: x[1])[:10]}
+    
+    # Get anomalies only
+    anomalies_df = custom_df[custom_df['Prediction'] == 1]
+    anomalies_preview = anomalies_df.head(10).to_dict('records') if not anomalies_df.empty else []
+    
     return jsonify({
         'success': True,
         'dataset_id': dataset_id,
@@ -441,7 +487,14 @@ def analyze_dataset(dataset_id):
         'anomalies_percentage': round((anomalies_count / len(custom_df)) * 100, 2),
         'accuracy': round(accuracy * 100, 2) if accuracy is not None else None,
         'confusion_matrix': confusion_matrix,
-        'preview_with_predictions': custom_df.head(10).to_dict('records')
+        'preview_with_predictions': custom_df.head(10).to_dict('records'),
+        'anomalies_preview': anomalies_preview,
+        'amount_stats': amount_stats,
+        'correlations': {
+            'top_positive': top_positive if 'Prediction' in custom_df.columns else {},
+            'top_negative': top_negative if 'Prediction' in custom_df.columns else {},
+            'all': correlations
+        }
     })
 
 @app.route('/datasets', methods=['GET'])

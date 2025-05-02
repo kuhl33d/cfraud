@@ -273,6 +273,41 @@ function analyzeDataset(datasetId) {
                     `;
                     analysisTableBody.appendChild(tr);
                 });
+                
+                // Populate anomalies section
+                document.getElementById('anomaliesSection').classList.remove('d-none');
+                const anomaliesTableBody = document.getElementById('anomaliesTableBody');
+                anomaliesTableBody.innerHTML = '';
+                
+                if (data.anomalies_preview && data.anomalies_preview.length > 0) {
+                    document.getElementById('noAnomaliesMessage').classList.add('d-none');
+                    
+                    data.anomalies_preview.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'table-danger';
+                        tr.innerHTML = `
+                            <td>${row.Time}</td>
+                            <td>$${row.Amount.toFixed(2)}</td>
+                            <td>${row.V1.toFixed(4)}</td>
+                            <td>${row.V2.toFixed(4)}</td>
+                            <td>${row.V3.toFixed(4)}</td>
+                            <td>${row.V4.toFixed(4)}</td>
+                            <td>${row.Class === 1 ? 'Fraud' : 'Normal'}</td>
+                        `;
+                        anomaliesTableBody.appendChild(tr);
+                    });
+                } else {
+                    document.getElementById('noAnomaliesMessage').classList.remove('d-none');
+                }
+                
+                // Render charts with the new data
+                if (data.amount_stats) {
+                    renderCustomAmountChart(data.amount_stats);
+                }
+                
+                if (data.correlations && data.correlations.top_positive && data.correlations.top_negative) {
+                    renderCustomCorrelationChart(data.correlations.top_positive, data.correlations.top_negative);
+                }
             } else {
                 alert('Error analyzing dataset: ' + (data.error || 'Unknown error'));
             }
@@ -286,6 +321,125 @@ function analyzeDataset(datasetId) {
             document.getElementById('analyzeDatasetBtn').disabled = false;
             document.getElementById('analyzeDatasetBtn').textContent = 'Analyze Dataset';
         });
+}
+
+// Add these new functions to render custom charts
+function renderCustomAmountChart(amountStats) {
+    // Check if chart already exists and destroy it
+    if (window.customAmountChart) {
+        window.customAmountChart.destroy();
+    }
+    
+    const ctx = document.getElementById('amountChart').getContext('2d');
+    
+    const chartData = {
+        labels: ['Mean', 'Median', 'Max'],
+        datasets: [
+            {
+                label: 'Normal Transactions',
+                backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                data: [
+                    amountStats.non_fraud.mean,
+                    amountStats.non_fraud.median,
+                    amountStats.non_fraud.max
+                ]
+            },
+            {
+                label: 'Fraudulent Transactions',
+                backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                data: [
+                    amountStats.fraud.mean,
+                    amountStats.fraud.median,
+                    amountStats.fraud.max
+                ]
+            }
+        ]
+    };
+    
+    window.customAmountChart = new Chart(ctx, {
+        type: 'bar',
+        data: chartData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Amount ($)'
+                    }
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Transaction Amount Statistics by Predicted Class'
+                }
+            }
+        }
+    });
+}
+
+function renderCustomCorrelationChart(positiveCorrelations, negativeCorrelations) {
+    // Check if chart already exists and destroy it
+    if (window.customCorrelationChart) {
+        window.customCorrelationChart.destroy();
+    }
+    
+    const ctx = document.getElementById('correlationChart').getContext('2d');
+    
+    // Combine top positive and negative correlations
+    const topPositive = Object.entries(positiveCorrelations)
+        .filter(([key]) => key !== 'Prediction') // Exclude Prediction itself
+        .slice(0, 5); // Take top 5 positive
+    
+    const topNegative = Object.entries(negativeCorrelations)
+        .filter(([key]) => key !== 'Prediction') // Exclude Prediction itself
+        .slice(0, 5); // Take top 5 negative
+    
+    const combined = [...topPositive, ...topNegative];
+    
+    const labels = combined.map(item => item[0]);
+    const values = combined.map(item => item[1]);
+    const backgroundColors = values.map(value => 
+        value >= 0 ? 'rgba(40, 167, 69, 0.7)' : 'rgba(220, 53, 69, 0.7)'
+    );
+    
+    window.customCorrelationChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Correlation with Fraud Prediction',
+                data: values,
+                backgroundColor: backgroundColors
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Correlation Coefficient'
+                    }
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Top Features Correlated with Fraud Prediction'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Correlation: ${context.raw.toFixed(4)}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
 }
 
 function clearDataset(datasetId) {
