@@ -464,8 +464,39 @@
             </div>
         </div>
 
-        <!-- New Custom Data Upload Section -->
-        
+        <!-- Add this section after the Analysis Results Section -->
+        <div class="row mb-4 d-none" id="anomaliesSection">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5>Detected Anomalies</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="noAnomaliesMessage" class="alert alert-info d-none">
+                            No anomalies were detected in this dataset.
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Amount</th>
+                                        <th>V1</th>
+                                        <th>V2</th>
+                                        <th>V3</th>
+                                        <th>V4</th>
+                                        <th>Actual Class</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="anomaliesTableBody">
+                                    <!-- Anomalies will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
