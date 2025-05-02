@@ -75,6 +75,20 @@ def load_model():
         model = pickle.load(f)
     return model
 
+# Add this function to your app.py
+def json_serialize(obj):
+    """Custom JSON serializer to handle NaN, Infinity, and -Infinity"""
+    if isinstance(obj, float):
+        if np.isnan(obj):
+            return None  # Convert NaN to null
+        if np.isinf(obj):
+            if obj > 0:
+                return "Infinity"  # Convert positive infinity to string
+            else:
+                return "-Infinity"  # Convert negative infinity to string
+    return obj
+
+
 # Global variables to avoid reloading
 df = load_dataset()
 model = load_model()
@@ -577,7 +591,7 @@ def analyze_dataset(dataset_id):
         anomalies_df = custom_df[custom_df['Prediction'] == 1]
         anomalies_preview = anomalies_df.head(10).to_dict('records') if not anomalies_df.empty else []
         
-        return jsonify({
+        return jsonify(json.loads(json.dumps({
             'success': True,
             'dataset_id': dataset_id,
             'total_records': len(custom_df),
@@ -593,7 +607,7 @@ def analyze_dataset(dataset_id):
                 'top_negative': top_negative if 'Prediction' in custom_df.columns else {},
                 'all': correlations
             }
-        })
+        }, default=json_serialize)))
     except Exception as e:
         # Log the full exception with traceback
         app.logger.error(f'Error analyzing dataset: {str(e)}\n{traceback.format_exc()}')

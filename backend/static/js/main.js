@@ -239,7 +239,17 @@ function analyzeDataset(datasetId) {
     
     // Fetch analysis results
     fetch(`/dataset/${datasetId}/analyze`)
-        .then(response => response.json())
+        .then(response => response.text())  // Get response as text instead of JSON
+        .then(text => {
+            // Replace NaN, Infinity, and -Infinity with valid JSON values
+            const validJsonText = text
+                .replace(/: NaN/g, ": null")
+                .replace(/: Infinity/g, ": Infinity")
+                .replace(/: -Infinity/g, ": -Infinity")
+            
+            // Now parse the fixed JSON
+            return JSON.parse(validJsonText);
+        })
         .then(data => {
             if (data.success) {
                 // Show analysis results section
