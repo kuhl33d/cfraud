@@ -19,19 +19,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize pagination
     initPagination();
     
-    // Initialize file upload functionality
-    initFileUpload();
+    // Initialize file upload functionality only once
+    if (!window.fileUploadInitialized) {
+        initFileUpload();
+    }
 });
 
 // File upload variables
 let currentDatasetId = null;
 
-// At the beginning of the initFileUpload function, add this check
 function initFileUpload() {
-    // Check if already initialized to prevent duplicate event handlers
-    if (window.fileUploadInitialized) {
-        return;
-    }
+    // Set the flag immediately to prevent any possibility of double initialization
     window.fileUploadInitialized = true;
     
     const uploadArea = document.getElementById('uploadArea');
@@ -129,19 +127,24 @@ function initFileUpload() {
         // Handle upload completion
         xhr.addEventListener('load', function() {
             if (xhr.status >= 200 && xhr.status < 300) {
-                const response = JSON.parse(xhr.responseText);
-                
-                if (response.success) {
-                    // Store dataset ID
-                    currentDatasetId = response.dataset_id;
+                try {
+                    const response = JSON.parse(xhr.responseText);
                     
-                    // Show success message
-                    showUploadSuccess('File uploaded successfully!');
-                    
-                    // Display dataset information
-                    displayDatasetInfo(response);
-                } else {
-                    showUploadError(response.error || 'Upload failed');
+                    if (response.success) {
+                        // Store dataset ID
+                        currentDatasetId = response.dataset_id;
+                        
+                        // Show success message
+                        showUploadSuccess('File uploaded successfully!');
+                        
+                        // Display dataset information
+                        displayDatasetInfo(response);
+                    } else {
+                        showUploadError(response.error || 'Upload failed');
+                    }
+                } catch (e) {
+                    console.error('JSON parsing error:', e);
+                    showUploadError('Error parsing server response: ' + e.message);
                 }
             } else {
                 try {
