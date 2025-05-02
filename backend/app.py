@@ -25,6 +25,12 @@ import traceback
 from werkzeug.utils import secure_filename
 from flask import session, flash
 
+from flask import after_this_request
+from datetime import datetime
+import functools
+
+
+
 # Add these constants after your existing imports
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'csv'}
@@ -72,6 +78,42 @@ def load_model():
 # Global variables to avoid reloading
 df = load_dataset()
 model = load_model()
+
+
+# Add this decorator function to log responses
+def log_response(f):
+    """Decorator to log response details"""
+    @functools.wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Get the response from the route function
+        response = f(*args, **kwargs)
+        
+        # Log response details
+        if isinstance(response, tuple) and len(response) >= 2:
+            # Handle (response, status_code) tuple returns
+            resp_data, status_code = response[0], response[1]
+        else:
+            # Handle direct response returns
+            resp_data, status_code = response, 200
+        
+        # Log response status and data
+        app.logger.info(f'Response Status: {status_code}')
+        
+        # Try to log response data if it's JSON
+        if hasattr(resp_data, 'get_json'):
+            try:
+                resp_json = resp_data.get_json()
+                # Truncate large responses to avoid huge log files
+                resp_str = json.dumps(resp_json)
+                if len(resp_str) > 1000:
+                    resp_str = resp_str[:1000] + '... [truncated]'
+                app.logger.info(f'Response Data: {resp_str}')
+            except Exception as e:
+                app.logger.warning(f'Failed to log response data: {str(e)}')
+        
+        return response
+    return decorated_function
+
 
 @app.route('/')
 @log_response
@@ -211,6 +253,7 @@ def get_data():
     })
 
 @app.route('/paginated_data')
+@log_response
 def get_paginated_data():
     # Get pagination parameters
     page = request.args.get('page', 1, type=int)
@@ -251,6 +294,7 @@ def get_paginated_data():
     })
 
 @app.route('/filter_data')
+@log_response
 def filter_data():
     # Get filter parameters
     class_filter = request.args.get('class', None, type=int)  # 0 for non-fraud, 1 for fraud
@@ -311,6 +355,7 @@ def filter_data():
     })
 
 @app.route('/upload', methods=['POST'])
+@log_response
 def upload_file():
     app.logger.info('File upload initiated')
     if 'file' not in request.files:
@@ -391,6 +436,7 @@ def upload_file():
         return jsonify({'error': str(e)}), 400
 
 @app.route('/dataset/<dataset_id>/detect', methods=['POST'])
+@log_response
 def detect_anomaly_custom_dataset(dataset_id):
     # Get data from request
     data = request.get_json()
@@ -433,6 +479,7 @@ def detect_anomaly_custom_dataset(dataset_id):
     })
 
 @app.route('/dataset/<dataset_id>/analyze', methods=['GET'])
+@log_response
 def analyze_dataset(dataset_id):
     app.logger.info(f'Analyzing dataset: {dataset_id}')
     # Check if the dataset exists
@@ -553,6 +600,7 @@ def analyze_dataset(dataset_id):
         return jsonify({'error': str(e)}), 500
 
 @app.route('/datasets', methods=['GET'])
+@log_response
 def list_datasets():
     datasets = []
     for dataset_id, df in custom_datasets.items():
@@ -568,6 +616,7 @@ def list_datasets():
     })
 
 @app.route('/dataset/<dataset_id>', methods=['DELETE'])
+@log_response
 def delete_dataset(dataset_id):
     # Check if the dataset exists
     if dataset_id not in custom_datasets:
@@ -600,12 +649,6 @@ if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, port=port)
 
-# Add this after your existing imports
-from flask import request, jsonify, after_this_request
-import json
-from datetime import datetime
-import functools
-
 # Add this after app configuration
 @app.before_request
 def log_request_info():
@@ -634,37 +677,3 @@ def log_request_info():
             # For file uploads, just log file names
             files = {k: v.filename for k, v in request.files.items()}
             app.logger.info(f'Request Files: {files}')
-
-# Add this decorator function to log responses
-def log_response(f):
-    """Decorator to log response details"""
-    @functools.wraps(f)
-    def decorated_function(*args, **kwargs):
-        # Get the response from the route function
-        response = f(*args, **kwargs)
-        
-        # Log response details
-        if isinstance(response, tuple) and len(response) >= 2:
-            # Handle (response, status_code) tuple returns
-            resp_data, status_code = response[0], response[1]
-        else:
-            # Handle direct response returns
-            resp_data, status_code = response, 200
-        
-        # Log response status and data
-        app.logger.info(f'Response Status: {status_code}')
-        
-        # Try to log response data if it's JSON
-        if hasattr(resp_data, 'get_json'):
-            try:
-                resp_json = resp_data.get_json()
-                # Truncate large responses to avoid huge log files
-                resp_str = json.dumps(resp_json)
-                if len(resp_str) > 1000:
-                    resp_str = resp_str[:1000] + '... [truncated]'
-                app.logger.info(f'Response Data: {resp_str}')
-            except Exception as e:
-                app.logger.warning(f'Failed to log response data: {str(e)}')
-        
-        return response
-    return decorated_function
