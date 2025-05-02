@@ -1,0 +1,64 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.card-header {
+    font-weight: bold;
+}
+
+.table-responsive {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.detect-btn {
+    width: 100%;
+}
+
+#detection-results {
+    min-height: 300px;
+}
+
+.result-card {
+    border-left: 5px solid;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.result-card.fraud {
+    border-left-color: #dc3545;
+}
+
+.result-card.normal {
+    border-left-color: #28a745;
+}
+
+.feature-value {
+    font-weight: bold;
+}
+
+.prediction-badge {
+    font-size: 1.2rem;
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.prediction-badge.fraud {
+    background-color: #dc3545;
+    color: white;
+}
+
+.prediction-badge.normal {
+    background-color: #28a745;
+    color: white;
+}
