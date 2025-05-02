@@ -3,11 +3,25 @@ import pickle
 import pandas as pd
 import numpy as np
 from flask import Flask, render_template, request, jsonify
+import uuid
+import json
+import logging
+from logging.handlers import RotatingFileHandler
+import traceback
+from werkzeug.utils import secure_filename
+from flask import session, flash
 
 # Add these imports at the top of your file
 import os
+import pickle
+import pandas as pd
+import numpy as np
+from flask import Flask, render_template, request, jsonify
 import uuid
 import json
+import logging
+from logging.handlers import RotatingFileHandler
+import traceback
 from werkzeug.utils import secure_filename
 from flask import session, flash
 
@@ -15,15 +29,28 @@ from flask import session, flash
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'csv'}
 MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB limit
+LOG_FOLDER = 'logs'
 
-# Create uploads directory if it doesn't exist
+# Create uploads and logs directories if they don't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(LOG_FOLDER, exist_ok=True)
 
 # Configure Flask app
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 app.secret_key = os.urandom(24)  # Required for session management
+
+# Configure logging
+log_file_path = os.path.join(LOG_FOLDER, 'app.log')
+handler = RotatingFileHandler(log_file_path, maxBytes=10485760, backupCount=10)
+handler.setFormatter(logging.Formatter(
+    '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+))
+handler.setLevel(logging.INFO)
+app.logger.addHandler(handler)
+app.logger.setLevel(logging.INFO)
+app.logger.info('Application startup')
 
 # Dictionary to store custom datasets in memory
 custom_datasets = {}
@@ -282,26 +309,33 @@ def filter_data():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    app.logger.info('File upload initiated')
     if 'file' not in request.files:
+        app.logger.warning('No file part in request')
         return jsonify({'error': 'No file part'}), 400
     
     file = request.files['file']
     if file.filename == '':
+        app.logger.warning('No selected file')
         return jsonify({'error': 'No selected file'}), 400
     
     if not file.filename.endswith('.csv'):
+        app.logger.warning(f'Invalid file type: {file.filename}')
         return jsonify({'error': 'Only CSV files are allowed'}), 400
     
     # Generate a unique ID for this upload
     dataset_id = str(uuid.uuid4())
+    app.logger.info(f'Generated dataset ID: {dataset_id}')
     
     # Save the file temporarily
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{dataset_id}.csv")
     file.save(file_path)
+    app.logger.info(f'File saved to {file_path}')
     
     try:
         # Try to load the dataset
         custom_df = pd.read_csv(file_path)
+        app.logger.info(f'Successfully loaded CSV with {len(custom_df)} rows')
         
         # Validate the dataset schema
         required_columns = ['Time', 'V1', 'V2', 'V3', 'V4', 'Amount']
@@ -309,6 +343,7 @@ def upload_file():
         # Check if the dataset has the required columns
         missing_columns = [col for col in required_columns if col not in custom_df.columns]
         if missing_columns:
+            app.logger.warning(f'Missing required columns: {missing_columns}')
             os.remove(file_path)  # Clean up the file
             return jsonify({
                 'error': f"Missing required columns: {', '.join(missing_columns)}"
@@ -316,6 +351,7 @@ def upload_file():
         
         # Add Class column if not present (default to 0)
         if 'Class' not in custom_df.columns:
+            app.logger.info('Adding missing Class column with default value 0')
             custom_df['Class'] = 0
         
         # Store the dataset in memory
@@ -330,6 +366,7 @@ def upload_file():
         non_fraud_count = custom_df[custom_df['Class'] == 0].shape[0]
         fraud_percentage = (fraud_count / total_transactions) * 100 if total_transactions > 0 else 0
         
+        app.logger.info(f'Upload successful. Dataset stats: {total_transactions} total, {fraud_count} fraud')
         return jsonify({
             'success': True,
             'dataset_id': dataset_id,
@@ -343,6 +380,8 @@ def upload_file():
         })
     
     except Exception as e:
+        # Log the full exception with traceback
+        app.logger.error(f'Error processing uploaded file: {str(e)}\n{traceback.format_exc()}')
         # Clean up the file in case of error
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -392,113 +431,119 @@ def detect_anomaly_custom_dataset(dataset_id):
 
 @app.route('/dataset/<dataset_id>/analyze', methods=['GET'])
 def analyze_dataset(dataset_id):
+    app.logger.info(f'Analyzing dataset: {dataset_id}')
     # Check if the dataset exists
     if dataset_id not in custom_datasets:
+        app.logger.warning(f'Dataset not found: {dataset_id}')
         return jsonify({'error': 'Dataset not found'}), 404
     
-    custom_df = custom_datasets[dataset_id]
-    
-    # Prepare features (exclude Class column if present)
-    X = custom_df.drop(columns=['Class'])
-    
-    # Remove feature names to avoid the sklearn warning
-    X_no_names = X.values
-    
-    # Make predictions
-    predictions = model.predict(X_no_names)
-    
-    # Convert predictions from -1 to 1 (anomaly) and 1 to 0 (normal)
-    predictions = [1 if x == -1 else 0 for x in predictions]
-    
-    # Count anomalies detected
-    anomalies_count = sum(predictions)
-    
-    # Add predictions to the dataframe
-    custom_df['Prediction'] = predictions
-    
-    # Calculate accuracy if Class column is present
-    accuracy = None
-    confusion_matrix = None
-    if 'Class' in custom_df.columns:
-        true_labels = custom_df['Class'].values
-        accuracy = (predictions == true_labels).mean()
+    try:
+        custom_df = custom_datasets[dataset_id]
+        app.logger.info(f'Dataset loaded with {len(custom_df)} records')
         
-        # Create confusion matrix
-        tp = sum((predictions == 1) & (true_labels == 1))
-        fp = sum((predictions == 1) & (true_labels == 0))
-        tn = sum((predictions == 0) & (true_labels == 0))
-        fn = sum((predictions == 0) & (true_labels == 1))
+        # Prepare features (exclude Class column if present)
+        X = custom_df.drop(columns=['Class'])
         
-        confusion_matrix = {
-            'true_positive': int(tp),
-            'false_positive': int(fp),
-            'true_negative': int(tn),
-            'false_negative': int(fn)
-        }
-    
-    # Calculate transaction amount statistics
-    fraud_pred_df = custom_df[custom_df['Prediction'] == 1].copy()  # Add .copy() here
-    non_fraud_pred_df = custom_df[custom_df['Prediction'] == 0].copy()  # Add .copy() here
-    
-    # Transaction amount statistics by predicted class
-    amount_stats = {
-        'fraud': {
-            'mean': round(fraud_pred_df['Amount'].mean(), 2) if not fraud_pred_df.empty else 0,
-            'median': round(fraud_pred_df['Amount'].median(), 2) if not fraud_pred_df.empty else 0,
-            'min': round(fraud_pred_df['Amount'].min(), 2) if not fraud_pred_df.empty else 0,
-            'max': round(fraud_pred_df['Amount'].max(), 2) if not fraud_pred_df.empty else 0,
-            'std': round(fraud_pred_df['Amount'].std(), 2) if not fraud_pred_df.empty else 0,
-            'quartiles': [
-                round(fraud_pred_df['Amount'].quantile(0.25), 2) if not fraud_pred_df.empty else 0,
-                round(fraud_pred_df['Amount'].quantile(0.5), 2) if not fraud_pred_df.empty else 0,
-                round(fraud_pred_df['Amount'].quantile(0.75), 2) if not fraud_pred_df.empty else 0
-            ]
-        },
-        'non_fraud': {
-            'mean': round(non_fraud_pred_df['Amount'].mean(), 2) if not non_fraud_pred_df.empty else 0,
-            'median': round(non_fraud_pred_df['Amount'].median(), 2) if not non_fraud_pred_df.empty else 0,
-            'min': round(non_fraud_pred_df['Amount'].min(), 2) if not non_fraud_pred_df.empty else 0,
-            'max': round(non_fraud_pred_df['Amount'].max(), 2) if not non_fraud_pred_df.empty else 0,
-            'std': round(non_fraud_pred_df['Amount'].std(), 2) if not non_fraud_pred_df.empty else 0,
-            'quartiles': [
-                round(non_fraud_pred_df['Amount'].quantile(0.25), 2) if not non_fraud_pred_df.empty else 0,
-                round(non_fraud_pred_df['Amount'].quantile(0.5), 2) if not non_fraud_pred_df.empty else 0,
-                round(non_fraud_pred_df['Amount'].quantile(0.75), 2) if not non_fraud_pred_df.empty else 0
-            ]
-        }
-    }
-    
-    # Calculate feature correlations with prediction
-    correlations = {}
-    if 'Prediction' in custom_df.columns:
-        # Add Prediction column to calculate correlations
-        correlations = custom_df.corr()['Prediction'].sort_values(ascending=False).to_dict()
+        # Remove feature names to avoid the sklearn warning
+        X_no_names = X.values
         
-        # Top positive and negative correlations
-        top_positive = {k: round(v, 4) for k, v in sorted(correlations.items(), key=lambda x: x[1], reverse=True)[:10]}
-        top_negative = {k: round(v, 4) for k, v in sorted(correlations.items(), key=lambda x: x[1])[:10]}
-    
-    # Get anomalies only
-    anomalies_df = custom_df[custom_df['Prediction'] == 1]
-    anomalies_preview = anomalies_df.head(10).to_dict('records') if not anomalies_df.empty else []
-    
-    return jsonify({
-        'success': True,
-        'dataset_id': dataset_id,
-        'total_records': len(custom_df),
-        'anomalies_detected': int(anomalies_count),
-        'anomalies_percentage': round((anomalies_count / len(custom_df)) * 100, 2),
-        'accuracy': round(accuracy * 100, 2) if accuracy is not None else None,
-        'confusion_matrix': confusion_matrix,
-        'preview_with_predictions': custom_df.head(10).to_dict('records'),
-        'anomalies_preview': anomalies_preview,
-        'amount_stats': amount_stats,
-        'correlations': {
-            'top_positive': top_positive if 'Prediction' in custom_df.columns else {},
-            'top_negative': top_negative if 'Prediction' in custom_df.columns else {},
-            'all': correlations
+        # Make predictions
+        app.logger.info('Running model predictions')
+        predictions = model.predict(X_no_names)
+        
+        # Convert predictions from -1 to 1 (anomaly) and 1 to 0 (normal)
+        predictions = [1 if x == -1 else 0 for x in predictions]
+        
+        # Count anomalies detected
+        anomalies_count = sum(predictions)
+        app.logger.info(f'Detected {anomalies_count} anomalies')
+        
+        # Add predictions to the dataframe
+        custom_df['Prediction'] = predictions
+        
+        # Calculate accuracy if Class column is present
+        accuracy = None
+        confusion_matrix = None
+        if 'Class' in custom_df.columns:
+            true_labels = custom_df['Class'].values
+            accuracy = (predictions == true_labels).mean()
+            
+            # Create confusion matrix
+            tp = sum((predictions == 1) & (true_labels == 1))
+            fp = sum((predictions == 1) & (true_labels == 0))
+            tn = sum((predictions == 0) & (true_labels == 0))
+            fn = sum((predictions == 0) & (true_labels == 1))
+            
+            confusion_matrix = {
+                'true_positive': int(tp),
+                'false_positive': int(fp),
+                'true_negative': int(tn),
+                'false_negative': int(fn)
+            }
+        
+        # Calculate transaction amount statistics
+        fraud_pred_df = custom_df[custom_df['Prediction'] == 1].copy()  # Add .copy() here
+        non_fraud_pred_df = custom_df[custom_df['Prediction'] == 0].copy()  # Add .copy() here
+        
+        # Transaction amount statistics by predicted class
+        amount_stats = {
+            'fraud': {
+                'mean': round(fraud_pred_df['Amount'].mean(), 2) if not fraud_pred_df.empty else 0,
+                'median': round(fraud_pred_df['Amount'].median(), 2) if not fraud_pred_df.empty else 0,
+                'min': round(fraud_pred_df['Amount'].min(), 2) if not fraud_pred_df.empty else 0,
+                'max': round(fraud_pred_df['Amount'].max(), 2) if not fraud_pred_df.empty else 0,
+                'std': round(fraud_pred_df['Amount'].std(), 2) if not fraud_pred_df.empty else 0,
+                'quartiles': [
+                    round(fraud_pred_df['Amount'].quantile(0.25), 2) if not fraud_pred_df.empty else 0,
+                    round(fraud_pred_df['Amount'].quantile(0.5), 2) if not fraud_pred_df.empty else 0,
+                    round(fraud_pred_df['Amount'].quantile(0.75), 2) if not fraud_pred_df.empty else 0
+                ]
+            },
+            'non_fraud': {
+                'mean': round(non_fraud_pred_df['Amount'].mean(), 2) if not non_fraud_pred_df.empty else 0,
+                'median': round(non_fraud_pred_df['Amount'].median(), 2) if not non_fraud_pred_df.empty else 0,
+                'min': round(non_fraud_pred_df['Amount'].min(), 2) if not non_fraud_pred_df.empty else 0,
+                'max': round(non_fraud_pred_df['Amount'].max(), 2) if not non_fraud_pred_df.empty else 0,
+                'std': round(non_fraud_pred_df['Amount'].std(), 2) if not non_fraud_pred_df.empty else 0,
+                'quartiles': [
+                    round(non_fraud_pred_df['Amount'].quantile(0.25), 2) if not non_fraud_pred_df.empty else 0,
+                    round(non_fraud_pred_df['Amount'].quantile(0.5), 2) if not non_fraud_pred_df.empty else 0,
+                    round(non_fraud_pred_df['Amount'].quantile(0.75), 2) if not non_fraud_pred_df.empty else 0
+                ]
+            }
         }
-    })
+        
+        # Calculate feature correlations with prediction
+        correlations = {}
+        if 'Prediction' in custom_df.columns:
+            # Add Prediction column to calculate correlations
+            correlations = custom_df.corr()['Prediction'].sort_values(ascending=False).to_dict()
+            
+            # Top positive and negative correlations
+            top_positive = {k: round(v, 4) for k, v in sorted(correlations.items(), key=lambda x: x[1], reverse=True)[:10]}
+            top_negative = {k: round(v, 4) for k, v in sorted(correlations.items(), key=lambda x: x[1])[:10]}
+        
+        # Get anomalies only
+        anomalies_df = custom_df[custom_df['Prediction'] == 1]
+        anomalies_preview = anomalies_df.head(10).to_dict('records') if not anomalies_df.empty else []
+        
+        return jsonify({
+            'success': True,
+            'dataset_id': dataset_id,
+            'total_records': len(custom_df),
+            'anomalies_detected': int(anomalies_count),
+            'anomalies_percentage': round((anomalies_count / len(custom_df)) * 100, 2),
+            'accuracy': round(accuracy * 100, 2) if accuracy is not None else None,
+            'confusion_matrix': confusion_matrix,
+            'preview_with_predictions': custom_df.head(10).to_dict('records'),
+            'anomalies_preview': anomalies_preview,
+            'amount_stats': amount_stats,
+            'correlations': {
+                'top_positive': top_positive if 'Prediction' in custom_df.columns else {},
+                'top_negative': top_negative if 'Prediction' in custom_df.columns else {},
+                'all': correlations
+            }
+        })
 
 @app.route('/datasets', methods=['GET'])
 def list_datasets():
@@ -537,3 +582,13 @@ def delete_dataset(dataset_id):
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, port=port)
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # Log the exception
+    app.logger.error(f'Unhandled exception: {str(e)}\n{traceback.format_exc()}')
+    # Return JSON instead of HTML for HTTP errors
+    return jsonify({
+        "error": "Internal Server Error",
+        "message": str(e)
+    }), 500

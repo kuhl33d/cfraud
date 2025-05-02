@@ -26,7 +26,14 @@ document.addEventListener('DOMContentLoaded', function() {
 // File upload variables
 let currentDatasetId = null;
 
+// At the beginning of the initFileUpload function, add this check
 function initFileUpload() {
+    // Check if already initialized to prevent duplicate event handlers
+    if (window.fileUploadInitialized) {
+        return;
+    }
+    window.fileUploadInitialized = true;
+    
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
     const uploadPrompt = document.getElementById('uploadPrompt');
