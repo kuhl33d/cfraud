@@ -345,12 +345,17 @@ function analyzeDataset(datasetId) {
 
 // Add these new functions to render custom charts
 function renderCustomAmountChart(amountStats) {
-    // Check if chart already exists and destroy it
-    if (window.customAmountChart) {
-        window.customAmountChart.destroy();
+    // Get the canvas element
+    const canvas = document.getElementById('amountChart');
+    
+    // Check if there's any Chart instance on this canvas
+    const chartInstance = Chart.getChart(canvas);
+    if (chartInstance) {
+        // Destroy any existing chart on this canvas
+        chartInstance.destroy();
     }
     
-    const ctx = document.getElementById('amountChart').getContext('2d');
+    const ctx = canvas.getContext('2d');
     
     const chartData = {
         labels: ['Mean', 'Median', 'Max'],
@@ -401,12 +406,17 @@ function renderCustomAmountChart(amountStats) {
 }
 
 function renderCustomCorrelationChart(positiveCorrelations, negativeCorrelations) {
-    // Check if chart already exists and destroy it
-    if (window.customCorrelationChart) {
-        window.customCorrelationChart.destroy();
+    // Get the canvas element
+    const canvas = document.getElementById('correlationChart');
+    
+    // Check if there's any Chart instance on this canvas
+    const chartInstance = Chart.getChart(canvas);
+    if (chartInstance) {
+        // Destroy any existing chart on this canvas
+        chartInstance.destroy();
     }
     
-    const ctx = document.getElementById('correlationChart').getContext('2d');
+    const ctx = canvas.getContext('2d');
     
     // Combine top positive and negative correlations
     const topPositive = Object.entries(positiveCorrelations)
