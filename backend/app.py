@@ -4,7 +4,33 @@ import pandas as pd
 import numpy as np
 from flask import Flask, render_template, request, jsonify
 
+# Add these imports at the top of your file
+import os
+import uuid
+import json
+from werkzeug.utils import secure_filename
+from flask import session, flash
+
+# Add these constants after your existing imports
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'csv'}
+MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB limit
+
+# Create uploads directory if it doesn't exist
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Configure Flask app
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
+app.secret_key = os.urandom(24)  # Required for session management
+
+# Dictionary to store custom datasets in memory
+custom_datasets = {}
+
+# Helper function to check allowed file extensions
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Load the credit card dataset
 def load_dataset():
@@ -252,6 +278,204 @@ def filter_data():
             'min_amount': min_amount,
             'max_amount': max_amount
         }
+    })
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    
+    if not file.filename.endswith('.csv'):
+        return jsonify({'error': 'Only CSV files are allowed'}), 400
+    
+    # Generate a unique ID for this upload
+    dataset_id = str(uuid.uuid4())
+    
+    # Save the file temporarily
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{dataset_id}.csv")
+    file.save(file_path)
+    
+    try:
+        # Try to load the dataset
+        custom_df = pd.read_csv(file_path)
+        
+        # Validate the dataset schema
+        required_columns = ['Time', 'V1', 'V2', 'V3', 'V4', 'Amount']
+        
+        # Check if the dataset has the required columns
+        missing_columns = [col for col in required_columns if col not in custom_df.columns]
+        if missing_columns:
+            os.remove(file_path)  # Clean up the file
+            return jsonify({
+                'error': f"Missing required columns: {', '.join(missing_columns)}"
+            }), 400
+        
+        # Add Class column if not present (default to 0)
+        if 'Class' not in custom_df.columns:
+            custom_df['Class'] = 0
+        
+        # Store the dataset in memory
+        custom_datasets[dataset_id] = custom_df
+        
+        # Store the dataset ID in the session
+        session['current_dataset_id'] = dataset_id
+        
+        # Return basic stats about the dataset
+        total_transactions = len(custom_df)
+        fraud_count = custom_df[custom_df['Class'] == 1].shape[0]
+        non_fraud_count = custom_df[custom_df['Class'] == 0].shape[0]
+        fraud_percentage = (fraud_count / total_transactions) * 100 if total_transactions > 0 else 0
+        
+        return jsonify({
+            'success': True,
+            'dataset_id': dataset_id,
+            'stats': {
+                'total': total_transactions,
+                'fraud': fraud_count,
+                'non_fraud': non_fraud_count,
+                'fraud_percentage': round(fraud_percentage, 2)
+            },
+            'preview': custom_df.head(5).to_dict('records')
+        })
+    
+    except Exception as e:
+        # Clean up the file in case of error
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/dataset/<dataset_id>/detect', methods=['POST'])
+def detect_anomaly_custom_dataset(dataset_id):
+    # Get data from request
+    data = request.get_json()
+    row_index = data.get('row_index', 0)
+    
+    # Convert row_index to integer
+    try:
+        row_index = int(row_index)
+    except (ValueError, TypeError):
+        return jsonify({'error': 'Row index must be a valid integer'}), 400
+    
+    # Check if the dataset exists
+    if dataset_id not in custom_datasets:
+        return jsonify({'error': 'Dataset not found'}), 404
+    
+    custom_df = custom_datasets[dataset_id]
+    
+    # Get the row from the dataset
+    if row_index < 0 or row_index >= len(custom_df):
+        return jsonify({'error': 'Invalid row index'}), 400
+    
+    row = custom_df.iloc[row_index]
+    
+    # Prepare features (exclude Class column)
+    features = row.drop('Class').values.reshape(1, -1)
+    
+    # Make prediction
+    prediction = model.predict(features)
+    
+    # Convert prediction (-1 for anomaly, 1 for normal) to result
+    result = "Anomaly (Fraud)" if prediction[0] == -1 else "Normal (Not Fraud)"
+    
+    # Get actual class for comparison
+    actual_class = "Fraud" if row['Class'] == 1 else "Not Fraud"
+    
+    return jsonify({
+        'row_data': row.to_dict(),
+        'prediction': result,
+        'actual_class': actual_class
+    })
+
+@app.route('/dataset/<dataset_id>/analyze', methods=['GET'])
+def analyze_dataset(dataset_id):
+    # Check if the dataset exists
+    if dataset_id not in custom_datasets:
+        return jsonify({'error': 'Dataset not found'}), 404
+    
+    custom_df = custom_datasets[dataset_id]
+    
+    # Prepare features (exclude Class column if present)
+    X = custom_df.drop(columns=['Class'])
+    
+    # Make predictions
+    predictions = model.predict(X)
+    
+    # Convert predictions from -1 to 1 (anomaly) and 1 to 0 (normal)
+    predictions = [1 if x == -1 else 0 for x in predictions]
+    
+    # Count anomalies detected
+    anomalies_count = sum(predictions)
+    
+    # Add predictions to the dataframe
+    custom_df['Prediction'] = predictions
+    
+    # Calculate accuracy if Class column is present
+    accuracy = None
+    confusion_matrix = None
+    if 'Class' in custom_df.columns:
+        true_labels = custom_df['Class'].values
+        accuracy = (predictions == true_labels).mean()
+        
+        # Create confusion matrix
+        tp = sum((predictions == 1) & (true_labels == 1))
+        fp = sum((predictions == 1) & (true_labels == 0))
+        tn = sum((predictions == 0) & (true_labels == 0))
+        fn = sum((predictions == 0) & (true_labels == 1))
+        
+        confusion_matrix = {
+            'true_positive': int(tp),
+            'false_positive': int(fp),
+            'true_negative': int(tn),
+            'false_negative': int(fn)
+        }
+    
+    return jsonify({
+        'success': True,
+        'dataset_id': dataset_id,
+        'total_records': len(custom_df),
+        'anomalies_detected': int(anomalies_count),
+        'anomalies_percentage': round((anomalies_count / len(custom_df)) * 100, 2),
+        'accuracy': round(accuracy * 100, 2) if accuracy is not None else None,
+        'confusion_matrix': confusion_matrix,
+        'preview_with_predictions': custom_df.head(10).to_dict('records')
+    })
+
+@app.route('/datasets', methods=['GET'])
+def list_datasets():
+    datasets = []
+    for dataset_id, df in custom_datasets.items():
+        datasets.append({
+            'id': dataset_id,
+            'total_records': len(df),
+            'upload_time': dataset_id  # Using UUID as a proxy for time
+        })
+    
+    return jsonify({
+        'success': True,
+        'datasets': datasets
+    })
+
+@app.route('/dataset/<dataset_id>', methods=['DELETE'])
+def delete_dataset(dataset_id):
+    # Check if the dataset exists
+    if dataset_id not in custom_datasets:
+        return jsonify({'error': 'Dataset not found'}), 404
+    
+    # Remove from memory
+    del custom_datasets[dataset_id]
+    
+    # Remove file if it exists
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{dataset_id}.csv")
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    
+    return jsonify({
+        'success': True,
+        'message': 'Dataset deleted successfully'
     })
 
 if __name__ == "__main__":

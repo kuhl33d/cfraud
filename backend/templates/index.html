@@ -6,6 +6,86 @@
     <title>Credit Card Fraud Detection Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #0d6efd;
+            background-color: rgba(13, 110, 253, 0.05);
+        }
+        .progress {
+            height: 25px;
+        }
+        .dataset-card {
+            border-left: 4px solid #0d6efd;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        .dataset-card:hover {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        .result-card {
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+        }
+        .result-card.fraud {
+            border-left: 5px solid #dc3545;
+        }
+        .result-card.normal {
+            border-left: 5px solid #28a745;
+        }
+        .prediction-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .prediction-badge.fraud {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+        .prediction-badge.normal {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+        .feature-value {
+            font-weight: 500;
+            color: #495057;
+        }
+        .confusion-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+            margin-top: 15px;
+        }
+        .confusion-matrix-cell {
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .cm-tp {
+            background-color: rgba(40, 167, 69, 0.2);
+        }
+        .cm-fp {
+            background-color: rgba(255, 193, 7, 0.2);
+        }
+        .cm-fn {
+            background-color: rgba(255, 193, 7, 0.2);
+        }
+        .cm-tn {
+            background-color: rgba(40, 167, 69, 0.2);
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
@@ -164,6 +244,188 @@
 
         <div class="row mb-4">
             <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5>Transaction Amount Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="amountChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5>Feature Correlations with Fraud</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="correlationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5>Custom Transaction Analysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="rowIndex" class="form-label">Enter Row Index (0-{{ stats.total - 1 }}):</label>
+                            <input type="number" class="form-control" id="rowIndex" min="0" max="{{ stats.total - 1 }}" value="0">
+                        </div>
+                        <button class="btn btn-primary" id="analyzeBtn">Analyze Transaction</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Custom Data Upload Section -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5>Custom Data Upload</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div id="uploadArea" class="upload-area mb-3">
+                                    <div id="uploadPrompt">
+                                        <i class="bi bi-cloud-arrow-up fs-1"></i>
+                                        <h5 class="mt-2">Drag & Drop CSV File Here</h5>
+                                        <p class="text-muted">or click to browse files</p>
+                                        <p class="small text-muted">Max file size: 50MB</p>
+                                    </div>
+                                    <div id="uploadProgress" class="d-none">
+                                        <h5 class="mb-3">Uploading File...</h5>
+                                        <div class="progress mb-3">
+                                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        <p id="uploadStatus" class="text-muted">Preparing upload...</p>
+                                    </div>
+                                    <input type="file" id="fileInput" class="d-none" accept=".csv">
+                                </div>
+                                <div id="uploadError" class="alert alert-danger d-none"></div>
+                                <div id="uploadSuccess" class="alert alert-success d-none"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="datasetInfo" class="d-none">
+                                    <h5>Dataset Information</h5>
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <p><strong>Total Records:</strong> <span id="datasetTotal">0</span></p>
+                                                    <p><strong>Normal Transactions:</strong> <span id="datasetNormal">0</span></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><strong>Fraudulent Transactions:</strong> <span id="datasetFraud">0</span></p>
+                                                    <p><strong>Fraud Percentage:</strong> <span id="datasetFraudPercentage">0</span>%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h5>Data Preview</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Time</th>
+                                                    <th>Amount</th>
+                                                    <th>Class</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="previewTableBody">
+                                                <!-- Preview data will be loaded here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="mt-3">
+                                        <button id="analyzeDatasetBtn" class="btn btn-primary">Analyze Dataset</button>
+                                        <button id="clearDatasetBtn" class="btn btn-outline-secondary ms-2">Clear Dataset</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Results Section -->
+        <div class="row mb-4 d-none" id="analysisResultsSection">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5>Dataset Analysis Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Detection Summary</h5>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p><strong>Total Records:</strong> <span id="analysisTotalRecords">0</span></p>
+                                                <p><strong>Anomalies Detected:</strong> <span id="analysisAnomaliesDetected">0</span></p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong>Anomaly Percentage:</strong> <span id="analysisAnomalyPercentage">0</span>%</p>
+                                                <p><strong>Model Accuracy:</strong> <span id="analysisAccuracy">N/A</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="confusionMatrixCard" class="card mb-3 d-none">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Confusion Matrix</h5>
+                                        <div class="confusion-matrix">
+                                            <div class="confusion-matrix-cell cm-tp" id="cmTP">TP: 0</div>
+                                            <div class="confusion-matrix-cell cm-fp" id="cmFP">FP: 0</div>
+                                            <div class="confusion-matrix-cell cm-fn" id="cmFN">FN: 0</div>
+                                            <div class="confusion-matrix-cell cm-tn" id="cmTN">TN: 0</div>
+                                        </div>
+                                        <div class="text-center mt-2">
+                                            <small class="text-muted">TP: True Positive, FP: False Positive, FN: False Negative, TN: True Negative</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Results Preview</h5>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Time</th>
+                                                        <th>Amount</th>
+                                                        <th>Actual</th>
+                                                        <th>Predicted</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="analysisTableBody">
+                                                    <!-- Analysis results will be loaded here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction Data Browser Section -->
+        <div class="row mb-4">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header bg-dark text-white">
                         <h5>Transaction Amount Statistics</h5>

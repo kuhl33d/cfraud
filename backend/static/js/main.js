@@ -18,7 +18,304 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize pagination
     initPagination();
+    
+    // Initialize file upload functionality
+    initFileUpload();
 });
+
+// File upload variables
+let currentDatasetId = null;
+
+function initFileUpload() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const uploadPrompt = document.getElementById('uploadPrompt');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const progressBar = document.getElementById('progressBar');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const uploadError = document.getElementById('uploadError');
+    const uploadSuccess = document.getElementById('uploadSuccess');
+    const analyzeDatasetBtn = document.getElementById('analyzeDatasetBtn');
+    const clearDatasetBtn = document.getElementById('clearDatasetBtn');
+    
+    // Click on upload area to trigger file input
+    uploadArea.addEventListener('click', function() {
+        fileInput.click();
+    });
+    
+    // Handle file selection
+    fileInput.addEventListener('change', function() {
+        if (fileInput.files.length > 0) {
+            uploadFile(fileInput.files[0]);
+        }
+    });
+    
+    // Handle drag and drop
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', function() {
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        if (e.dataTransfer.files.length > 0) {
+            uploadFile(e.dataTransfer.files[0]);
+        }
+    });
+    
+    // Handle analyze dataset button
+    analyzeDatasetBtn.addEventListener('click', function() {
+        if (currentDatasetId) {
+            analyzeDataset(currentDatasetId);
+        }
+    });
+    
+    // Handle clear dataset button
+    clearDatasetBtn.addEventListener('click', function() {
+        if (currentDatasetId) {
+            clearDataset(currentDatasetId);
+        }
+    });
+    
+    function uploadFile(file) {
+        // Check if file is CSV
+        if (!file.name.endsWith('.csv')) {
+            showUploadError('Only CSV files are allowed');
+            return;
+        }
+        
+        // Check file size (max 50MB)
+        if (file.size > 50 * 1024 * 1024) {
+            showUploadError('File size exceeds the 50MB limit');
+            return;
+        }
+        
+        // Show upload progress
+        uploadPrompt.classList.add('d-none');
+        uploadProgress.classList.remove('d-none');
+        uploadError.classList.add('d-none');
+        uploadSuccess.classList.add('d-none');
+        
+        // Create FormData
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Create XMLHttpRequest for progress tracking
+        const xhr = new XMLHttpRequest();
+        
+        // Track upload progress
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const percentComplete = Math.round((e.loaded / e.total) * 100);
+                progressBar.style.width = percentComplete + '%';
+                progressBar.textContent = percentComplete + '%';
+                uploadStatus.textContent = `Uploading: ${formatFileSize(e.loaded)} of ${formatFileSize(e.total)}`;
+            }
+        });
+        
+        // Handle upload completion
+        xhr.addEventListener('load', function() {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                const response = JSON.parse(xhr.responseText);
+                
+                if (response.success) {
+                    // Store dataset ID
+                    currentDatasetId = response.dataset_id;
+                    
+                    // Show success message
+                    showUploadSuccess('File uploaded successfully!');
+                    
+                    // Display dataset information
+                    displayDatasetInfo(response);
+                } else {
+                    showUploadError(response.error || 'Upload failed');
+                }
+            } else {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    showUploadError(response.error || 'Upload failed');
+                } catch (e) {
+                    showUploadError('Upload failed: ' + xhr.statusText);
+                }
+            }
+            
+            // Reset upload UI
+            resetUploadUI();
+        });
+        
+        // Handle upload error
+        xhr.addEventListener('error', function() {
+            showUploadError('Network error occurred during upload');
+            resetUploadUI();
+        });
+        
+        // Handle upload abort
+        xhr.addEventListener('abort', function() {
+            showUploadError('Upload was aborted');
+            resetUploadUI();
+        });
+        
+        // Send the request
+        xhr.open('POST', '/upload', true);
+        xhr.send(formData);
+        
+        uploadStatus.textContent = 'Preparing upload...';
+    }
+    
+    function resetUploadUI() {
+        uploadPrompt.classList.remove('d-none');
+        uploadProgress.classList.add('d-none');
+        progressBar.style.width = '0%';
+        progressBar.textContent = '';
+        fileInput.value = '';
+    }
+    
+    function showUploadError(message) {
+        uploadError.textContent = message;
+        uploadError.classList.remove('d-none');
+        uploadSuccess.classList.add('d-none');
+    }
+    
+    function showUploadSuccess(message) {
+        uploadSuccess.textContent = message;
+        uploadSuccess.classList.remove('d-none');
+        uploadError.classList.add('d-none');
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function displayDatasetInfo(data) {
+        // Show dataset info section
+        document.getElementById('datasetInfo').classList.remove('d-none');
+        
+        // Update stats
+        document.getElementById('datasetTotal').textContent = data.stats.total;
+        document.getElementById('datasetNormal').textContent = data.stats.non_fraud;
+        document.getElementById('datasetFraud').textContent = data.stats.fraud;
+        document.getElementById('datasetFraudPercentage').textContent = data.stats.fraud_percentage;
+        
+        // Update preview table
+        const previewTableBody = document.getElementById('previewTableBody');
+        previewTableBody.innerHTML = '';
+        
+        data.preview.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row.Time}</td>
+                <td>$${row.Amount.toFixed(2)}</td>
+                <td>${row.Class === 1 ? 'Fraud' : 'Normal'}</td>
+            `;
+            previewTableBody.appendChild(tr);
+        });
+    }
+}
+
+function analyzeDataset(datasetId) {
+    // Show loading state
+    document.getElementById('analyzeDatasetBtn').disabled = true;
+    document.getElementById('analyzeDatasetBtn').innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Analyzing...';
+    
+    // Fetch analysis results
+    fetch(`/dataset/${datasetId}/analyze`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show analysis results section
+                document.getElementById('analysisResultsSection').classList.remove('d-none');
+                
+                // Update summary stats
+                document.getElementById('analysisTotalRecords').textContent = data.total_records;
+                document.getElementById('analysisAnomaliesDetected').textContent = data.anomalies_detected;
+                document.getElementById('analysisAnomalyPercentage').textContent = data.anomalies_percentage;
+                
+                // Update accuracy if available
+                if (data.accuracy !== null) {
+                    document.getElementById('analysisAccuracy').textContent = data.accuracy + '%';
+                } else {
+                    document.getElementById('analysisAccuracy').textContent = 'N/A (No class labels)';
+                }
+                
+                // Update confusion matrix if available
+                if (data.confusion_matrix) {
+                    document.getElementById('confusionMatrixCard').classList.remove('d-none');
+                    document.getElementById('cmTP').textContent = `TP: ${data.confusion_matrix.true_positive}`;
+                    document.getElementById('cmFP').textContent = `FP: ${data.confusion_matrix.false_positive}`;
+                    document.getElementById('cmFN').textContent = `FN: ${data.confusion_matrix.false_negative}`;
+                    document.getElementById('cmTN').textContent = `TN: ${data.confusion_matrix.true_negative}`;
+                } else {
+                    document.getElementById('confusionMatrixCard').classList.add('d-none');
+                }
+                
+                // Update results preview table
+                const analysisTableBody = document.getElementById('analysisTableBody');
+                analysisTableBody.innerHTML = '';
+                
+                data.preview_with_predictions.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = row.Prediction !== row.Class ? 'table-warning' : '';
+                    tr.innerHTML = `
+                        <td>${row.Time}</td>
+                        <td>$${row.Amount.toFixed(2)}</td>
+                        <td>${row.Class === 1 ? 'Fraud' : 'Normal'}</td>
+                        <td>${row.Prediction === 1 ? 'Fraud' : 'Normal'}</td>
+                    `;
+                    analysisTableBody.appendChild(tr);
+                });
+            } else {
+                alert('Error analyzing dataset: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while analyzing the dataset.');
+        })
+        .finally(() => {
+            // Reset button state
+            document.getElementById('analyzeDatasetBtn').disabled = false;
+            document.getElementById('analyzeDatasetBtn').textContent = 'Analyze Dataset';
+        });
+}
+
+function clearDataset(datasetId) {
+    if (confirm('Are you sure you want to remove this dataset?')) {
+        fetch(`/dataset/${datasetId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Reset UI
+                document.getElementById('datasetInfo').classList.add('d-none');
+                document.getElementById('analysisResultsSection').classList.add('d-none');
+                currentDatasetId = null;
+                
+                // Show success message
+                const uploadSuccess = document.getElementById('uploadSuccess');
+                uploadSuccess.textContent = 'Dataset removed successfully';
+                uploadSuccess.classList.remove('d-none');
+                document.getElementById('uploadError').classList.add('d-none');
+            } else {
+                alert('Error removing dataset: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while removing the dataset.');
+        });
+    }
+}
 
 // Pagination variables
 let currentPage = 1;
