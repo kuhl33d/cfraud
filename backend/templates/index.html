@@ -98,6 +98,70 @@
             </div>
         </div>
 
+        <!-- New Paginated Data Section -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Transaction Data Browser</h5>
+                        <div class="d-flex">
+                            <select id="perPageSelect" class="form-select form-select-sm me-2" style="width: auto;">
+                                <option value="10">10 per page</option>
+                                <option value="25">25 per page</option>
+                                <option value="50">50 per page</option>
+                                <option value="100">100 per page</option>
+                            </select>
+                            <select id="classFilter" class="form-select form-select-sm me-2" style="width: auto;">
+                                <option value="all">All Classes</option>
+                                <option value="0">Normal Only</option>
+                                <option value="1">Fraud Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Index</th>
+                                        <th>Time</th>
+                                        <th>Amount</th>
+                                        <th>V1</th>
+                                        <th>V2</th>
+                                        <th>V3</th>
+                                        <th>V4</th>
+                                        <th>Class</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paginatedTableBody">
+                                    <!-- Paginated data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="loadingIndicator" class="text-center py-3 d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div id="noDataMessage" class="alert alert-info d-none">
+                            No transactions found matching the current filters.
+                        </div>
+                        <nav aria-label="Transaction data pagination">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div id="paginationInfo" class="text-muted">
+                                    Showing <span id="showingFrom">0</span> to <span id="showingTo">0</span> of <span id="totalRecords">0</span> transactions
+                                </div>
+                                <ul class="pagination" id="paginationControls">
+                                    <!-- Pagination controls will be generated here -->
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row mb-4">
             <div class="col-md-6">
                 <div class="card">
