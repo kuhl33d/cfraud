@@ -418,13 +418,37 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Add new chart containers with unique IDs -->
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-dark text-white">
+                                        <h5>Transaction Amount Statistics</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="uploadedAmountChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-dark text-white">
+                                        <h5>Feature Correlations with Fraud</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="uploadedCorrelationChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Transaction Data Browser Section -->
-        <div class="row mb-4">
+        <!-- <div class="row mb-4">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header bg-dark text-white">
@@ -462,7 +486,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Add this section after the Analysis Results Section -->
         <div class="row mb-4 d-none" id="anomaliesSection">

@@ -320,13 +320,13 @@ function analyzeDataset(datasetId) {
                     document.getElementById('noAnomaliesMessage').classList.remove('d-none');
                 }
                 
-                // Render charts with the new data
+                // Render charts with the new data using the new canvas IDs
                 if (data.amount_stats) {
-                    renderCustomAmountChart(data.amount_stats);
+                    renderUploadedAmountChart(data.amount_stats);
                 }
                 
                 if (data.correlations && data.correlations.top_positive && data.correlations.top_negative) {
-                    renderCustomCorrelationChart(data.correlations.top_positive, data.correlations.top_negative);
+                    renderUploadedCorrelationChart(data.correlations.top_positive, data.correlations.top_negative);
                 }
             } else {
                 alert('Error analyzing dataset: ' + (data.error || 'Unknown error'));
@@ -343,10 +343,10 @@ function analyzeDataset(datasetId) {
         });
 }
 
-// Add these new functions to render custom charts
-function renderCustomAmountChart(amountStats) {
-    // Get the canvas element
-    const canvas = document.getElementById('amountChart');
+// Add new functions for rendering charts with different canvas IDs
+function renderUploadedAmountChart(amountStats) {
+    // Get the canvas element with the new ID
+    const canvas = document.getElementById('uploadedAmountChart');
     
     // Check if there's any Chart instance on this canvas
     const chartInstance = Chart.getChart(canvas);
@@ -381,7 +381,7 @@ function renderCustomAmountChart(amountStats) {
         ]
     };
     
-    window.customAmountChart = new Chart(ctx, {
+    window.uploadedAmountChart = new Chart(ctx, {
         type: 'bar',
         data: chartData,
         options: {
@@ -405,9 +405,9 @@ function renderCustomAmountChart(amountStats) {
     });
 }
 
-function renderCustomCorrelationChart(positiveCorrelations, negativeCorrelations) {
-    // Get the canvas element
-    const canvas = document.getElementById('correlationChart');
+function renderUploadedCorrelationChart(positiveCorrelations, negativeCorrelations) {
+    // Get the canvas element with the new ID
+    const canvas = document.getElementById('uploadedCorrelationChart');
     
     // Check if there's any Chart instance on this canvas
     const chartInstance = Chart.getChart(canvas);
@@ -435,7 +435,7 @@ function renderCustomCorrelationChart(positiveCorrelations, negativeCorrelations
         value >= 0 ? 'rgba(40, 167, 69, 0.7)' : 'rgba(220, 53, 69, 0.7)'
     );
     
-    window.customCorrelationChart = new Chart(ctx, {
+    window.uploadedCorrelationChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
