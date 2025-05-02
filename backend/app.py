@@ -74,6 +74,7 @@ df = load_dataset()
 model = load_model()
 
 @app.route('/')
+@log_response
 def index():
     # Get basic dataset statistics for the dashboard
     total_transactions = len(df)
@@ -94,6 +95,7 @@ def index():
     return render_template('index.html', stats=stats, preview_data=preview_data)
 
 @app.route('/detect', methods=['POST'])
+@log_response
 def detect_anomaly():
     # Get data from request
     data = request.get_json()
@@ -130,6 +132,7 @@ def detect_anomaly():
     })
 
 @app.route('/data')
+@log_response
 def get_data():
     # Enhanced transaction amount statistics
     fraud_df = df[df['Class'] == 1].copy()  # Add .copy() here
@@ -596,3 +599,72 @@ def handle_exception(e):
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=True, port=port)
+
+# Add this after your existing imports
+from flask import request, jsonify, after_this_request
+import json
+from datetime import datetime
+import functools
+
+# Add this after app configuration
+@app.before_request
+def log_request_info():
+    """Log request details before processing"""
+    # Don't log static file requests
+    if request.path.startswith('/static/'):
+        return
+    
+    # Log basic request info
+    app.logger.info(f'Request: {request.method} {request.path}')
+    app.logger.info(f'Headers: {dict(request.headers)}')
+    
+    # Log request body for appropriate methods
+    if request.method in ['POST', 'PUT', 'PATCH']:
+        if request.is_json:
+            # For JSON requests
+            try:
+                body = request.get_json()
+                app.logger.info(f'Request JSON: {json.dumps(body)}')
+            except Exception as e:
+                app.logger.warning(f'Failed to parse JSON request: {str(e)}')
+        elif request.form:
+            # For form data
+            app.logger.info(f'Request Form: {dict(request.form)}')
+        elif request.files:
+            # For file uploads, just log file names
+            files = {k: v.filename for k, v in request.files.items()}
+            app.logger.info(f'Request Files: {files}')
+
+# Add this decorator function to log responses
+def log_response(f):
+    """Decorator to log response details"""
+    @functools.wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Get the response from the route function
+        response = f(*args, **kwargs)
+        
+        # Log response details
+        if isinstance(response, tuple) and len(response) >= 2:
+            # Handle (response, status_code) tuple returns
+            resp_data, status_code = response[0], response[1]
+        else:
+            # Handle direct response returns
+            resp_data, status_code = response, 200
+        
+        # Log response status and data
+        app.logger.info(f'Response Status: {status_code}')
+        
+        # Try to log response data if it's JSON
+        if hasattr(resp_data, 'get_json'):
+            try:
+                resp_json = resp_data.get_json()
+                # Truncate large responses to avoid huge log files
+                resp_str = json.dumps(resp_json)
+                if len(resp_str) > 1000:
+                    resp_str = resp_str[:1000] + '... [truncated]'
+                app.logger.info(f'Response Data: {resp_str}')
+            except Exception as e:
+                app.logger.warning(f'Failed to log response data: {str(e)}')
+        
+        return response
+    return decorated_function
