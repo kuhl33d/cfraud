@@ -544,6 +544,10 @@ def analyze_dataset(dataset_id):
                 'all': correlations
             }
         })
+    except Exception as e:
+        # Log the full exception with traceback
+        app.logger.error(f'Error analyzing dataset: {str(e)}\n{traceback.format_exc()}')
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/datasets', methods=['GET'])
 def list_datasets():
@@ -579,10 +583,6 @@ def delete_dataset(dataset_id):
         'message': 'Dataset deleted successfully'
     })
 
-if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, port=port)
-
 @app.errorhandler(Exception)
 def handle_exception(e):
     # Log the exception
@@ -592,3 +592,7 @@ def handle_exception(e):
         "error": "Internal Server Error",
         "message": str(e)
     }), 500
+
+if __name__ == "__main__":
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, port=port)
