@@ -6,8 +6,22 @@
   # Use https://search.nixos.org/packages to find packages
   packages = [ 
     pkgs.python3
-    pkgs.git-lfs  
+    pkgs.git-lfs
+
+
+    pkgs.python311Packages.sqlalchemy
+    pkgs.mysql80
+    pkgs.pkg-config
+    pkgs.libmysqlclient
   ];
+
+  services.mysql = {
+    enable = true;
+    package = pkgs.mariadb;
+  };
+  env={
+    PORT = "5000";
+  };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
     extensions = [ "ms-python.python" ];
