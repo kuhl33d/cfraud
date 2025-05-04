@@ -96,6 +96,7 @@ function initFileUpload() {
         }
         
         // Check file size (max 50MB)
+        // find a method to get it from python now it's hardcoded
         if (file.size > 50 * 1024 * 1024) {
             showUploadError('File size exceeds the 50MB limit');
             return;

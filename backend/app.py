@@ -2,14 +2,13 @@ import os
 import pickle
 import pandas as pd
 import numpy as np
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, after_this_request, send_from_directory
 import uuid
 import json
 import logging
 from logging.handlers import RotatingFileHandler
 import traceback
 from werkzeug.utils import secure_filename
-from flask import session, flash, after_this_request
 from flask_login import login_user, logout_user, login_required, current_user
 
 from database import User, db, init_db
@@ -18,16 +17,6 @@ import functools
 
 
 
-# Add these constants after your existing imports
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'csv'}
-MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB limit
-LOG_FOLDER = 'logs'
-
-# Create uploads and logs directories if they don't exist
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(LOG_FOLDER, exist_ok=True)
-
 # Import configuration
 from config import get_config
 
@@ -35,11 +24,16 @@ from config import get_config
 app = Flask(__name__)
 app.config.from_object(get_config())
 
+# Create uploads and logs directories if they don't exist
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(app.config['LOG_FOLDER'], exist_ok=True)
+os.makedirs(app.config['STATIC_FOLDER'], exist_ok=True)
+
 # Initialize database
 init_db(app)
 
 # Configure logging
-log_file_path = os.path.join(LOG_FOLDER, 'app.log')
+log_file_path = os.path.join(app.config['LOG_FOLDER'], f'app_{datetime.now().strftime("%Y%m%d")}.log')
 handler = RotatingFileHandler(log_file_path, maxBytes=10485760, backupCount=10)
 handler.setFormatter(logging.Formatter(
     '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
@@ -54,7 +48,7 @@ custom_datasets = {}
 
 # Helper function to check allowed file extensions
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 # Load the credit card dataset
 def load_dataset():
@@ -142,6 +136,11 @@ def index():
     
     return render_template('index.html', stats=stats, preview_data=preview_data, user=current_user)
 
+@app.route("/favicon.ico") # 2 add get for favicon
+def fav():
+    # logging.info(f" {os.path.join(__file__, 'static')} {app.config['STATIC_FOLDER']}")
+    # print(os.path.join(__file__, 'static'))
+    return send_from_directory(app.config['STATIC_FOLDER'], 'favicon.ico') # for sure return the file
 
 @app.route('/login', methods=['GET', 'POST'])
 @log_response

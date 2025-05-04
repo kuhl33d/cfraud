@@ -1,0 +1,4 @@
+2025-05-04 08:10:21,992 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:99]
+2025-05-04 08:10:25,451 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:99]
+2025-05-04 08:10:25,451 INFO: Response Data: null [in /home/user/cfraud/backend/app.py:109]
+2025-05-04 08:10:25,536 INFO: Response Status: 200 [in /home/user/cfraud/backend/app.py:99]
