@@ -1,0 +1,20 @@
+backend/
+├── app.py
+├── auth.py
+├── config.py
+├── database.py
+├── README.md
+├── schema.sql
+├── static
+│   ├── css
+│   │   └── style.css
+│   ├── favicon.ico
+│   └── js
+│       └── main.js
+└── templates
+    ├── index.html
+    ├── login.html
+    ├── profile.html
+    └── signup.html
+
+5 directories, 13 files
