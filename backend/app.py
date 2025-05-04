@@ -2,30 +2,17 @@ import os
 import pickle
 import pandas as pd
 import numpy as np
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 import uuid
 import json
 import logging
 from logging.handlers import RotatingFileHandler
 import traceback
 from werkzeug.utils import secure_filename
-from flask import session, flash
+from flask import session, flash, after_this_request
+from flask_login import login_user, logout_user, login_required, current_user
 
-# Add these imports at the top of your file
-import os
-import pickle
-import pandas as pd
-import numpy as np
-from flask import Flask, render_template, request, jsonify
-import uuid
-import json
-import logging
-from logging.handlers import RotatingFileHandler
-import traceback
-from werkzeug.utils import secure_filename
-from flask import session, flash
-
-from flask import after_this_request
+from database import User, db, init_db
 from datetime import datetime
 import functools
 
@@ -41,11 +28,15 @@ LOG_FOLDER = 'logs'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(LOG_FOLDER, exist_ok=True)
 
+# Import configuration
+from config import get_config
+
 # Configure Flask app
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
-app.secret_key = os.urandom(24)  # Required for session management
+app.config.from_object(get_config())
+
+# Initialize database
+init_db(app)
 
 # Configure logging
 log_file_path = os.path.join(LOG_FOLDER, 'app.log')
@@ -131,6 +122,7 @@ def log_response(f):
 
 @app.route('/')
 @log_response
+@login_required
 def index():
     # Get basic dataset statistics for the dashboard
     total_transactions = len(df)
@@ -148,7 +140,208 @@ def index():
     # Pass the first few rows for the data preview table
     preview_data = df.head(5).to_dict('records')
     
-    return render_template('index.html', stats=stats, preview_data=preview_data)
+    return render_template('index.html', stats=stats, preview_data=preview_data, user=current_user)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+@log_response
+def login():
+    # If user is already authenticated, redirect to index
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        user = User.query.filter_by(username=username).first()
+        
+        # Check if user exists and password is correct
+        if user and user.check_password(password):
+            login_user(user)
+            app.logger.info(f'User {username} logged in successfully')
+            
+            # Log the login activity
+            ip_address = request.remote_addr
+            log_user_activity(user.id, 'Login', 'User logged in successfully', ip_address)
+            
+            flash('Login successful!', 'success')
+            
+            # Redirect to the page user wanted to access or to index
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('index'))
+        else:
+            app.logger.warning(f'Failed login attempt for username: {username}')
+            flash('Invalid username or password', 'danger')
+    
+    return render_template('login.html')
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+@log_response
+def signup():
+    # If user is already authenticated, redirect to index
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        
+        # Validate form data
+        if not username or not email or not password or not confirm_password:
+            flash('All fields are required', 'danger')
+            return render_template('signup.html')
+        
+        if password != confirm_password:
+            flash('Passwords do not match', 'danger')
+            return render_template('signup.html')
+        
+        # Check if username or email already exists
+        if User.query.filter_by(username=username).first():
+            flash('Username already exists', 'danger')
+            return render_template('signup.html')
+        
+        if User.query.filter_by(email=email).first():
+            flash('Email already exists', 'danger')
+            return render_template('signup.html')
+        
+        # Create new user
+        user = User(username=username, email=email)
+        user.set_password(password)
+        
+        try:
+            db.session.add(user)
+            db.session.commit()
+            app.logger.info(f'New user registered: {username}')
+            
+            # Log the registration activity
+            ip_address = request.remote_addr
+            log_user_activity(user.id, 'Registration', 'New user account created', ip_address)
+            
+            flash('Account created successfully! Please log in.', 'success')
+            return redirect(url_for('login'))
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f'Error creating user: {str(e)}')
+            flash('An error occurred. Please try again.', 'danger')
+    
+    return render_template('signup.html')
+
+
+@app.route('/logout')
+@login_required
+@log_response
+def logout():
+    # Log the logout activity
+    log_user_activity(current_user.id, 'Logout', 'User logged out')
+    logout_user()
+    flash('You have been logged out', 'info')
+    return redirect(url_for('login'))
+
+
+# User activity logging function
+def log_user_activity(user_id, activity_type, activity_details, ip_address=None):
+    """Log user activity to the database using the UserActivity model"""
+    try:
+        # Create new UserActivity instance
+        from database import UserActivity
+        
+        activity = UserActivity(
+            user_id=user_id,
+            activity_type=activity_type,
+            activity_details=activity_details,
+            ip_address=ip_address
+        )
+        
+        # Add and commit to database
+        db.session.add(activity)
+        db.session.commit()
+        
+        app.logger.info(f'Activity logged for user {user_id}: {activity_type}')
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f'Failed to log user activity: {str(e)}')
+
+
+@app.route('/profile')
+@login_required
+@log_response
+def profile():
+    """User profile page"""
+    # Get user's recent activity using the UserActivity model
+    try:
+        # Import UserActivity model
+        from database import UserActivity
+        
+        # Query user activities
+        activities = UserActivity.query.filter_by(user_id=current_user.id)\
+            .order_by(UserActivity.created_at.desc())\
+            .limit(10).all()
+            
+    except Exception as e:
+        app.logger.error(f'Failed to get user activity: {str(e)}')
+        activities = []
+    
+    return render_template('profile.html', activities=activities)
+
+
+@app.route('/update_profile', methods=['POST'])
+@login_required
+@log_response
+def update_profile():
+    """Update user profile information"""
+    email = request.form.get('email')
+    current_password = request.form.get('current_password')
+    new_password = request.form.get('new_password')
+    confirm_password = request.form.get('confirm_password')
+    
+    user = User.query.get(current_user.id)
+    changes_made = False
+    
+    # Update email if changed
+    if email and email != user.email:
+        # Check if email is already in use
+        if User.query.filter(User.email == email, User.id != user.id).first():
+            flash('Email already in use by another account', 'danger')
+            return redirect(url_for('profile'))
+        
+        user.email = email
+        changes_made = True
+        log_user_activity(user.id, 'Profile Update', 'Email address updated')
+    
+    # Update password if provided
+    if current_password and new_password and confirm_password:
+        # Verify current password
+        if not user.check_password(current_password):
+            flash('Current password is incorrect', 'danger')
+            return redirect(url_for('profile'))
+        
+        # Verify new passwords match
+        if new_password != confirm_password:
+            flash('New passwords do not match', 'danger')
+            return redirect(url_for('profile'))
+        
+        # Update password
+        user.set_password(new_password)
+        changes_made = True
+        log_user_activity(user.id, 'Profile Update', 'Password changed')
+    
+    # Save changes if any were made
+    if changes_made:
+        try:
+            db.session.commit()
+            flash('Profile updated successfully', 'success')
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f'Error updating profile: {str(e)}')
+            flash('An error occurred while updating your profile', 'danger')
+    else:
+        flash('No changes were made to your profile', 'info')
+    
+    return redirect(url_for('profile'))
 
 @app.route('/detect', methods=['POST'])
 @log_response
@@ -662,7 +855,7 @@ def handle_exception(e):
 if __name__ == "__main__":
     # port = int(os.environ.get('PORT', 5000))
     # app.run(debug=True, port=port)
-    app.run(debug=True,port=int(os.environ.get('PORT', 80)))
+    app.run(debug=True,port=int(os.environ.get('PORT', 5000)))
 
 # Add this after app configuration
 @app.before_request
